@@ -1,0 +1,3 @@
+[[watcher]]
+path = "."
+goarg = ["run", "main.go"]

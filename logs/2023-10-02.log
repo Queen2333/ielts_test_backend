@@ -1,0 +1,7 @@
+time="2023-10-02T17:55:34+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
+time="2023-10-02T18:01:46+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
+time="2023-10-02T18:01:48+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
+time="2023-10-02T18:01:49+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
+time="2023-10-02T18:01:51+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
+time="2023-10-02T18:01:52+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
+time="2023-10-02T18:01:53+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
