@@ -1,9 +1,10 @@
 package routes
 
 import (
-	"github.com/lux208716/go-gin-project/controllers"
-	"github.com/lux208716/go-gin-project/middlewares"
 	"net/http"
+
+	"github.com/Queen2333/ielts_test_backend/controllers"
+	"github.com/Queen2333/ielts_test_backend/middlewares"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,19 +17,21 @@ func SetupRouter() *gin.Engine {
 	// 使用 Logger 中间件
 	r.Use(middlewares.Logger())
 
-	r.POST("/login", controllers.Login)
-	r.POST("/send-pin", controllers.SendPinController)
+	r.POST("/login", controllers.LoginHandler)
+	r.POST("/send-code", controllers.SendCodeHandler)
 	r.POST("/register", controllers.RegisterUser)
+	r.POST("/user-info", controllers.GetUserInfo)
 
-	r.GET("/users", controllers.GetAllUser)
-	r.POST("/create-user", controllers.CreateUser)
+
+	// r.GET("/users", controllers.GetAllUser)
+	// r.POST("/create-user", controllers.CreateUser)
 
 	// 执行Python脚本
-	r.GET("/execute-open-the-door", controllers.ExecutePythonScriptHandler)
+	// r.GET("/execute-open-the-door", controllers.ExecutePythonScriptHandler)
 
 	// Define routes and their handlers.
 
-	r.GET("/products/:id", middlewares.JWTAuthMiddleware(), controllers.GetProductByID)
+	// r.GET("/products/:id", middlewares.JWTAuthMiddleware(), controllers.GetProductByID)
 
 	return r
 }

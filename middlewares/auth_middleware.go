@@ -9,7 +9,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-var jwtSecret = []byte("your-secret-key") // Replace with the same secret key used for token creation.
+var jwtSecret = []byte("qC2dACu+zgx94ALrfmCTESkxoqfCG4ItCWknbz+XmfTfWNDvFeuYKOGXgAKqSq+7Bdu8jXrxZfpWwE0K0jPLHw==") // Replace with the same secret key used for token creation.
 
 // JWTAuthMiddleware is a middleware to validate the JWT token.
 func JWTAuthMiddleware() gin.HandlerFunc {

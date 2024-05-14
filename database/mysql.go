@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -27,4 +28,9 @@ func InitializeDB(connectionString string) error {
 // GetDB 返回数据库连接
 func GetDB() *sql.DB {
 	return db
+}
+
+// IsNoRowsError 检查错误是否是 sql.ErrNoRows
+func IsNoRowsError(err error) bool {
+	return errors.Is(err, sql.ErrNoRows)
 }

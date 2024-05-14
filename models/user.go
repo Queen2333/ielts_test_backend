@@ -1,11 +1,8 @@
 package models
-
 type UserQuery struct {
-	ID       int    `json:"id"`
-	Username string `json:"username"`
+	ID       string    `json:"id"`
 	Email    string `json:"email"`
-	Created  string `json:"created"`
-	Updated  string `json:"updated"`
+	RoleID   int `json:"role_id"`
 }
 
 type UserCreate struct {

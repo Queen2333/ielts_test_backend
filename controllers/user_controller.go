@@ -2,13 +2,15 @@ package controllers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/lux208716/go-gin-project/database"
-	"github.com/lux208716/go-gin-project/models"
-	"github.com/lux208716/go-gin-project/utils"
 	"net/http"
+
+	"github.com/Queen2333/ielts_test_backend/database"
+	"github.com/Queen2333/ielts_test_backend/models"
+	"github.com/Queen2333/ielts_test_backend/utils"
+	"github.com/gin-gonic/gin"
 )
 
 // RegisterUser 注册用户控制器
@@ -41,6 +43,30 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "用户注册成功"})
 }
 
+func GetUserInfo(c * gin.Context){
+	var request struct {
+		Token string `json:"token"`
+	}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+	utils.InitRedis()
+	user_info, err := utils.Get(request.Token)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user in Redis"})
+		return
+	}
+
+	var userInfo models.UserQuery
+	err = json.Unmarshal([]byte(user_info), &userInfo)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"user": userInfo})
+}
+
 // GetAllUser 获取所有用户
 func GetAllUser(c *gin.Context) {
 
@@ -58,7 +84,7 @@ func GetAllUser(c *gin.Context) {
 
 	for rows.Next() {
 		var user models.UserQuery
-		if err := rows.Scan(&user.ID, &user.Username, &user.Email, &user.Created, &user.Updated); err != nil {
+		if err := rows.Scan(&user.ID, &user.Email); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/Queen2333/ielts_test_backend/models" // Update this with your actual project package name
+	"github.com/Queen2333/ielts_test_backend/utils"
 	"github.com/gin-gonic/gin"
-	"github.com/lux208716/go-gin-project/models" // Update this with your actual project package name
-	"github.com/lux208716/go-gin-project/utils"
 )
 
 // GetProductByID is the handler for the "/products/:id" endpoint.

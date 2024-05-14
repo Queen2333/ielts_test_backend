@@ -3,8 +3,9 @@ package utils
 import (
 	"context"
 	"fmt"
-	"github.com/redis/go-redis/v9"
 	"time"
+
+	"github.com/redis/go-redis/v9"
 )
 
 var rdb *redis.Client
@@ -12,7 +13,7 @@ var rdb *redis.Client
 // InitRedis 初始化Redis客户端
 func InitRedis() error {
 	rdb = redis.NewClient(&redis.Options{
-		Addr:     "10.244.74.249:6379", // Redis服务器地址
+		Addr:     "192.168.100.213:6379", // Redis服务器地址
 		Password: "",                   // Redis密码，如果没有设置密码则为空
 		DB:       0,                    // Redis数据库索引（默认为0）
 	})
@@ -21,6 +22,7 @@ func InitRedis() error {
 	// 测试连接是否成功
 	pong, err := rdb.Ping(context.Background()).Result()
 	if err != nil {
+		fmt.Println("Failed to connect to Redis:", err)
 		return err
 	}
 	fmt.Println(pong) // 打印结果: PONG
@@ -30,6 +32,7 @@ func InitRedis() error {
 // Set 设置一个键值对 (如果过期时间小于等于0，则表示不设置过期时间)
 func Set(key string, value interface{}, expiration time.Duration) error {
 	ctx := context.Background()
+
 	if expiration <= 0 {
 		// 如果过期时间小于等于0，则表示不设置过期时间
 		err := rdb.Set(ctx, key, value, 0).Err()
@@ -85,25 +88,25 @@ func Get(key string) (string, error) {
 
 /****** 这一段是链接redis定义的函数 *****/
 
-func connectToRedis() *redis.Client {
-	return redis.NewClient(&redis.Options{
-		Addr: "10.244.74.249:6379", // Redis服务器地址和端口
-	})
-}
+// func connectToRedis() *redis.Client {
+// 	return redis.NewClient(&redis.Options{
+// 		Addr: "10.244.74.249:6379", // Redis服务器地址和端口
+// 	})
+// }
 
-func pingRedis(ctx context.Context, client *redis.Client) {
-	pong, err := client.Ping(ctx).Result()
-	if err != nil {
-		fmt.Println("Error connecting to Redis:", err)
-		return
-	}
-	fmt.Println("Connected to Redis:", pong)
-}
+// func pingRedis(ctx context.Context, client *redis.Client) {
+// 	pong, err := client.Ping(ctx).Result()
+// 	if err != nil {
+// 		fmt.Println("Error connecting to Redis:", err)
+// 		return
+// 	}
+// 	fmt.Println("Connected to Redis:", pong)
+// }
 
-func setKeyValue(ctx context.Context, client *redis.Client, key, value string) error {
-	return client.Set(ctx, key, value, 0).Err()
-}
+// func setKeyValue(ctx context.Context, client *redis.Client, key, value string) error {
+// 	return client.Set(ctx, key, value, 0).Err()
+// }
 
-func getValueByKey(ctx context.Context, client *redis.Client, key string) (string, error) {
-	return client.Get(ctx, key).Result()
-}
+// func getValueByKey(ctx context.Context, client *redis.Client, key string) (string, error) {
+// 	return client.Get(ctx, key).Result()
+// }
