@@ -1,0 +1,104 @@
+definitions:
+  models.ResponseData:
+    properties:
+      code:
+        type: integer
+      data: {}
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: 用户使用邮箱和验证码登录系统，如果用户不存在，则自动创建新用户
+      parameters:
+      - description: 用户邮箱地址
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      - description: 验证码
+        in: body
+        name: code
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+      summary: 用户登录
+  /send-code:
+    post:
+      consumes:
+      - application/json
+      description: 生成6位随机验证码并发送到指定邮箱地址
+      parameters:
+      - description: 目标邮箱地址
+        in: body
+        name: email
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+      summary: 发送验证码到邮箱
+  /user-info:
+    post:
+      consumes:
+      - application/json
+      description: 根据用户的Token获取用户信息
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ResponseData'
+      summary: 获取用户信息
+swagger: "2.0"

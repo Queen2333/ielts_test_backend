@@ -4,6 +4,8 @@ import (
 	"math/rand"
 	"regexp"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -28,4 +30,8 @@ func IsValidEmail(email string) bool {
 	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
 	valid := regexp.MustCompile(emailRegex).MatchString(email)
 	return valid
+}
+
+func HandleResponse(c *gin.Context, statusCode int, data interface{}, message string) {
+	c.JSON(statusCode, gin.H{"code": statusCode, "data": data, "message": message})
 }

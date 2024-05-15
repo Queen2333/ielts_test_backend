@@ -16,7 +16,17 @@ import (
 
 var jwtSecret = []byte("qC2dACu+zgx94ALrfmCTESkxoqfCG4ItCWknbz+XmfTfWNDvFeuYKOGXgAKqSq+7Bdu8jXrxZfpWwE0K0jPLHw==") // Replace with a secure secret key
 
-// 登录接口
+// @Summary 用户登录
+// @Description 用户使用邮箱和验证码登录系统，如果用户不存在，则自动创建新用户
+// @Accept json
+// @Produce json
+// @Param email body string true "用户邮箱地址"
+// @Param code body string true "验证码"
+// @Success 200 {object} models.ResponseData
+// @Failure 400 {object} models.ResponseData
+// @Failure 401 {object} models.ResponseData
+// @Failure 500 {object} models.ResponseData
+// @Router /login [post]
 func LoginHandler(c *gin.Context) {
 	// 解析请求参数
 	var request struct {
@@ -24,20 +34,20 @@ func LoginHandler(c *gin.Context) {
 		Code  string `json:"code"`
 	}
 	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
 		return
 	}
 
 	// 获取验证码
 	storedCode, err := utils.Get("verification_code_" + request.Email)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve verification code"})
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to retrieve verification code")
 		return
 	}
 
 	// 验证码校验
 	if request.Code != storedCode {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid verification code"})
+		utils.HandleResponse(c, http.StatusUnauthorized, "", "Invalid verification code")
 		return
 	}
 
@@ -48,24 +58,20 @@ func LoginHandler(c *gin.Context) {
 			// 符合条件的用户不存在
 			user, err = createUser(request.Email)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+				utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to create user")
 				return
 			}
 		} else {
 			// 其他错误
-			fmt.Println("查询用户时发生错误:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check user existence"})
+			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to check user existence")
 			return
 		}
-	} else {
-		// 查询成功，符合条件的用户存在
-		fmt.Println("用户存在，用户信息:", user)
 	}
 
 	// 生成 JWT
-	token, err := GenerateJWT(c, request.Email)
+	token, err := GenerateJWT(c, user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to generate token")
 		return
 	}
 
@@ -79,13 +85,13 @@ func LoginHandler(c *gin.Context) {
 		}
 		err = utils.Set(token, userString, 24 * time.Hour)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store user in Redis"})
+			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to store user in Redis")
 			return
 		}
 	}
 
 	// 返回 token
-	c.JSON(http.StatusOK, gin.H{"token": token, "user": user})
+	utils.HandleResponse(c, http.StatusOK, gin.H{"token": token, "user": user}, "success")
 }
 
 // 检查数据库中是否存在指定邮箱的用户
@@ -130,20 +136,20 @@ func createUser(email string) (models.UserQuery, error) {
 }
 
 // GenerateJWT 生成 JWT
-func GenerateJWT(c *gin.Context, email string) (string, error) {
-	tokenString, err := utils.Get("token_" + email)
+func GenerateJWT(c *gin.Context, user_id string) (string, error) {
+	tokenString, err := utils.Get("token_" + user_id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get token in Redis"})
 		token := jwt.New(jwt.SigningMethodHS256)
 		claims := token.Claims.(jwt.MapClaims)
-		claims["email"] = email
+		claims["email"] = user_id
 		claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // 设置过期时间为 24 小时
 		// 签名 JWT
 		tokenString, err = token.SignedString(jwtSecret)
 		if err != nil {
 			return "", err
 		}
-		err = utils.Set("token_" + email, tokenString, 24 * time.Hour)
+		err = utils.Set("token_" + user_id, tokenString, 24 * time.Hour)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store token in Redis"})
 		}

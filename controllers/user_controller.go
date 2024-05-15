@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
@@ -43,16 +44,26 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "用户注册成功"})
 }
 
+// @Summary 获取用户信息
+// @Description 根据用户的Token获取用户信息
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.ResponseData
+// @Failure 400 {object} models.ResponseData
+// @Failure 401 {object} models.ResponseData
+// @Failure 500 {object} models.ResponseData
+// @Router /user-info [post]
 func GetUserInfo(c * gin.Context){
-	var request struct {
-		Token string `json:"token"`
-	}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+	authHeader := c.GetHeader("Authorization")
+	if authHeader == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization header missing"})
 		return
 	}
+
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+
 	utils.InitRedis()
-	user_info, err := utils.Get(request.Token)
+	user_info, err := utils.Get(token)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user in Redis"})
 		return

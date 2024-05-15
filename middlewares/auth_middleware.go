@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/Queen2333/ielts_test_backend/utils"
 )
 
 var jwtSecret = []byte("qC2dACu+zgx94ALrfmCTESkxoqfCG4ItCWknbz+XmfTfWNDvFeuYKOGXgAKqSq+7Bdu8jXrxZfpWwE0K0jPLHw==") // Replace with the same secret key used for token creation.
@@ -26,13 +26,10 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		// Extract the token from the Authorization header.
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		// Parse and validate the token.
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			return jwtSecret, nil
-		})
-
-		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+		utils.InitRedis()
+		_, err := utils.Get(tokenString)
+		if err != nil {
+			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to retrieve stored token from Redis")
 			c.Abort()
 			return
 		}

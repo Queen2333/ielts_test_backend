@@ -7,19 +7,27 @@ import (
 	"github.com/Queen2333/ielts_test_backend/middlewares"
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // SetupRouter configures the application's routes.
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
+	r.Use(func(c *gin.Context) {
+		if c.Request.URL.Path != "/login" && c.Request.URL.Path != "/send-code" {
+			middlewares.JWTAuthMiddleware()(c)
+		}
+	})
 	r.Use(enableCORS)
 	// 使用 Logger 中间件
 	r.Use(middlewares.Logger())
 
 	r.POST("/login", controllers.LoginHandler)
 	r.POST("/send-code", controllers.SendCodeHandler)
-	r.POST("/register", controllers.RegisterUser)
+	// r.POST("/register", controllers.RegisterUser)
 	r.POST("/user-info", controllers.GetUserInfo)
 
 
@@ -33,6 +41,7 @@ func SetupRouter() *gin.Engine {
 
 	// r.GET("/products/:id", middlewares.JWTAuthMiddleware(), controllers.GetProductByID)
 
+	// 使用 Swagger UI 中间件
 	return r
 }
 

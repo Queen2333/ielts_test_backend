@@ -9,7 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// 发送验证码接口
+// @Summary 发送验证码到邮箱
+// @Description 生成6位随机验证码并发送到指定邮箱地址
+// @Accept json
+// @Produce json
+// @Param email body string true "目标邮箱地址"
+// @Success 200 {object} models.ResponseData
+// @Failure 400 {object} models.ResponseData
+// @Failure 400 {object} models.ResponseData
+// @Failure 500 {object} models.ResponseData
+// @Router /send-code [post]
 func SendCodeHandler(c *gin.Context) {
 	utils.InitRedis()
 
@@ -19,13 +28,13 @@ func SendCodeHandler(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&request); err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
         return
     }
 
 	// 验证邮箱格式
 	if err := utils.IsValidEmail(request.Email); !err {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid email"})
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid email")
         return
 	}
 
@@ -35,12 +44,12 @@ func SendCodeHandler(c *gin.Context) {
 	// 将验证码存储到 Redis 中，有效期为5分钟
 	err := utils.Set("verification_code_" + request.Email, code, 15 * time.Minute)
     if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store verification code"})
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to store verification code")
         return
     }
 
 	utils.SendEmail("邮箱登录验证", fmt.Sprintf("您的验证码为: %s, 有效期为15分钟", code), request.Email)
 
 	// 返回验证码
-	c.JSON(http.StatusOK, gin.H{"code": code})
+	utils.HandleResponse(c, http.StatusOK, code, "success")
 }
