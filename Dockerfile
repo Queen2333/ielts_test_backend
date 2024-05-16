@@ -1,27 +1,29 @@
-# 使用 golang 官方提供的镜像作为基础
-FROM golang:1.21
+# 使用官方的 Golang 镜像作为基础镜像
+FROM golang:latest AS builder
 
-#ENV http_proxy http://10.98.163.254
-ENV GOPROXY=https://goproxy.io,direct
+# 在容器中创建一个目录来存放项目代码
+WORKDIR /app
 
-# 设置工作目录
-WORKDIR /go/src/app
-
-RUN go mod init go-project
-
-# 将项目文件复制到镜像中
+# 将本地代码复制到容器中的工作目录
 COPY . .
 
-# 编译应用程序
-RUN go build -o app
+# 使用 go mod 下载项目依赖
+RUN go mod download
 
-# 暴露应用程序的端口（如果有需要）
-EXPOSE 8080
+# 编译 Go 应用
+RUN CGO_ENABLED=0 GOOS=linux go build -o app .
 
-# 安装Python 3
-#RUN apt-get update && apt-get install -y python3 && apt-get -y install python3-pip
+# 创建一个小镜像
+FROM alpine:latest
 
-#RUN pip3 install RPi.GPIO
+# 在容器中创建一个目录来存放应用程序
+WORKDIR /root/
 
-# 设置容器启动时的命令
+# 从 builder 镜像中将编译好的应用程序复制到容器中
+COPY --from=builder /app/app .
+
+# 声明服务端口
+EXPOSE 8081
+
+# 运行应用程序
 CMD ["./app"]
