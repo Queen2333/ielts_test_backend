@@ -3,6 +3,8 @@ package utils
 import (
 	"math/rand"
 	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -34,4 +36,17 @@ func IsValidEmail(email string) bool {
 
 func HandleResponse(c *gin.Context, statusCode int, data interface{}, message string) {
 	c.JSON(statusCode, gin.H{"code": statusCode, "data": data, "message": message})
+}
+
+// 解析逗号分隔的字符串为整数数组
+func StringToList(partListStr string) []int {
+    parts := strings.Split(partListStr, ",")
+    var partList []int
+    for _, part := range parts {
+        part = strings.TrimSpace(part) // 去除字符串两端的空格
+        if id, err := strconv.Atoi(part); err == nil {
+            partList = append(partList, id)
+        }
+    }
+    return partList
 }

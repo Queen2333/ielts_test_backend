@@ -39,7 +39,7 @@ func main() {
 	
 
 	// 初始化数据库连接
-	err := database.InitializeDB("ielts_alex:Yx180236@tcp(172.25.138.133:3306)/ielts_database")
+	err := database.InitializeDB("ielts_alex:Yx180236@tcp(192.168.100.213:3306)/ielts_database")
 	if err != nil {
 		// 处理连接错误
 		panic(err)

@@ -28,7 +28,14 @@ func SetupRouter() *gin.Engine {
 	r.POST("/login", controllers.LoginHandler)
 	r.POST("/send-code", controllers.SendCodeHandler)
 	// r.POST("/register", controllers.RegisterUser)
-	r.POST("/user-info", controllers.GetUserInfo)
+	r.GET("/user-info", controllers.GetUserInfo)
+
+	r.GET("/config/listening/list", controllers.ListeningList)
+	r.GET("/config/listening-part/list", controllers.ListeningPartList)
+	r.POST("/config/listening-part/add", controllers.AddListeningPart)
+	r.PUT("/config/listening-part/update", controllers.UpdateListeningPart)
+
+
 
 
 	// r.GET("/users", controllers.GetAllUser)

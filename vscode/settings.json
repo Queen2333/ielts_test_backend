@@ -1,0 +1,16 @@
+{
+    "go.useLanguageServer": true,
+    "go.formatTool": "gofmt",
+    "[go]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true,
+            "source.fixAll": true
+        }
+    },
+    "gopls": {
+        "usePlaceholders": true, // 在自动补全时使用占位符
+        "completeUnimported": true, // 自动补全未导入的包
+        "staticcheck": true // 启用 staticcheck 来检查代码
+    }
+}

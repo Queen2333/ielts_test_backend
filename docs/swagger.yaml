@@ -1,4 +1,108 @@
 definitions:
+  models.ListeningItem:
+    properties:
+      audio_files:
+        items:
+          type: string
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      part_list:
+        items:
+          $ref: '#/definitions/models.ListeningPartItem'
+        type: array
+      status:
+        type: integer
+      type:
+        type: integer
+    type: object
+  models.ListeningListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.ListeningItem'
+        type: array
+      total:
+        type: integer
+    type: object
+  models.ListeningPartItem:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        type: integer
+      type_list:
+        items:
+          $ref: '#/definitions/models.ListeningTypeItem'
+        type: array
+    type: object
+  models.ListeningPartListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.ListeningPartItem'
+        type: array
+      total:
+        type: integer
+    type: object
+  models.ListeningQuestionItem:
+    properties:
+      answer: {}
+      "no":
+        type: string
+      options:
+        items:
+          $ref: '#/definitions/models.OptionsItem'
+        type: array
+      question:
+        type: string
+    type: object
+  models.ListeningTypeItem:
+    properties:
+      article_content:
+        type: string
+      matching_options:
+        items:
+          $ref: '#/definitions/models.MatchingOptionsItem'
+        type: array
+      picture:
+        items:
+          $ref: '#/definitions/models.PicturesItem'
+        type: array
+      question_list:
+        items:
+          $ref: '#/definitions/models.ListeningQuestionItem'
+        type: array
+      title:
+        type: string
+      type:
+        type: integer
+    type: object
+  models.MatchingOptionsItem:
+    properties:
+      content:
+        type: string
+      label:
+        type: string
+    type: object
+  models.OptionsItem:
+    properties:
+      label:
+        type: string
+      value:
+        type: string
+    type: object
+  models.PicturesItem:
+    properties:
+      name:
+        type: string
+      url:
+        type: string
+    type: object
   models.ResponseData:
     properties:
       code:
@@ -10,6 +114,126 @@ definitions:
 info:
   contact: {}
 paths:
+  /config/listening-part/list:
+    post:
+      consumes:
+      - application/json
+      description: 根据条件获取听力part列表，并返回分页结果
+      parameters:
+      - description: 试题名称
+        in: query
+        name: name
+        type: string
+      - description: 试题状态
+        in: query
+        name: status
+        type: integer
+      - description: 试题类型
+        in: query
+        name: type
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNo
+        required: true
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageLimit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ListeningPartListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取听力篇列表
+      tags:
+      - Listening
+  /config/listening/list:
+    post:
+      consumes:
+      - application/json
+      description: 根据条件获取听力列表，并返回分页结果
+      parameters:
+      - description: 听力名称
+        in: query
+        name: name
+        type: string
+      - description: 听力状态
+        in: query
+        name: status
+        type: integer
+      - description: 试题类型
+        in: query
+        name: type
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNo
+        required: true
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageLimit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ListeningListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取听力套题列表
+      tags:
+      - Listening
   /login:
     post:
       consumes:

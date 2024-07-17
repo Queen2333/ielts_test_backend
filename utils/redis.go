@@ -14,7 +14,7 @@ var rdb *redis.Client
 func InitRedis() error {
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     "192.168.100.213:6379", // Redis服务器地址
-		Password: "",                   // Redis密码，如果没有设置密码则为空
+		Password: "Yx180236",                   // Redis密码，如果没有设置密码则为空
 		DB:       0,                    // Redis数据库索引（默认为0）
 	})
 	// 可以在这里添加其他的初始化配置，例如设置连接池大小等
