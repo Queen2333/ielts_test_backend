@@ -38,7 +38,7 @@ func SetupRouter() *gin.Engine {
 	r.POST("/config/listening-part/add", controllers.AddListeningPart)
 	r.PUT("/config/listening-part/update", controllers.UpdateListeningPart)
 
-
+	r.POST("/upload/file", controllers.UploadFile)
 
 
 	// r.GET("/users", controllers.GetAllUser)
