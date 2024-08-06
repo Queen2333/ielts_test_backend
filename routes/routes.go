@@ -31,6 +31,9 @@ func SetupRouter() *gin.Engine {
 	r.GET("/user-info", controllers.GetUserInfo)
 
 	r.GET("/config/listening/list", controllers.ListeningList)
+	r.POST("/config/listening/add", controllers.AddListening)
+	r.PUT("/config/listening/update", controllers.UpdateListening)
+
 	r.GET("/config/listening-part/list", controllers.ListeningPartList)
 	r.POST("/config/listening-part/add", controllers.AddListeningPart)
 	r.PUT("/config/listening-part/update", controllers.UpdateListeningPart)

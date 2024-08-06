@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
@@ -52,41 +53,40 @@ func ListeningList(c *gin.Context) {
     }
 
 	// 遍历 results 提取所有的 part_list ID
-	var partIDs []int
-	for _, result := range results {
-		// 从结果中提取 part_list 字段并解析为整数数组
-		if partListStr, ok := result["part_list"].(string); ok {
-			partList := utils.StringToList(partListStr)
-			// 将 partList 中的 ID 添加到 partIDs 中
-			partIDs = append(partIDs, partList...)
-		}
-	}
+	for i, result := range results {
 
-
-	// 查询 part_list 中的详细信息
-	if len(partIDs) > 0 {
-		partDetails, err := database.GetPartsByIds("listening_part_list", partIDs)
-		if err != nil {
-			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to query listening parts")
+		// 处理 []interface{} 类型的 part_list
+		partListInterface, ok := result["part_list"].([]interface{})
+		if !ok {
+			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to parse part_list")
 			return
 		}
 
-		/// 将查询结果放回到对应的 part_list 中
-		for i := range results {
-			var details []map[string]interface{}
-			for _, partID := range partIDs {
-				for _, partDetail := range partDetails {
-					id, ok := partDetail["id"].(int)
-					if ok && id == partID {
-						details = append(details, partDetail)
-						break
-					}
-				}
-			}
-			results[i]["part_list"] = details
+		// 转换为字符串数组
+		var partListStrArray []string
+		for _, part := range partListInterface {
+			partListStrArray = append(partListStrArray, fmt.Sprint(part))
 		}
-	}
 
+		var partListStr = strings.Join(partListStrArray, ",")
+
+		partList := utils.StringToList(partListStr)
+		// 查询 part_list 中的详细信息
+		var details []map[string]interface{}
+		for _, id := range partList {
+			partDetail, err := database.GetPartsByIds("listening_part_list", []int{id})
+			if err != nil {
+				utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to query listening parts")
+				return
+			}
+			if len(partDetail) > 0 {
+				details = append(details, partDetail[0])
+			}
+		}
+		// 将查询结果放回到对应的 part_list 中
+		results[i]["part_list"] = details
+		// }
+	}
 
 	// 返回查询结果
 	response := map[string]interface{}{
@@ -94,6 +94,64 @@ func ListeningList(c *gin.Context) {
 		"total":   total,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 新增听力套题
+// @Description 新增听力套题
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param part body models.BasicListeningItem true "听力套题内容"
+// @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/listening/add [post]
+func AddListening(c *gin.Context) {
+	var part models.BasicListeningItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		fmt.Println(err)
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("listening_list", &part, "create")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to insert listening part")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 更新听力套题
+// @Description 更新听力套题
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param part body models.BasicListeningItem true "听力套题内容"
+// @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/listening/add [post]
+func UpdateListening(c *gin.Context) {
+	var part models.BasicListeningItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		fmt.Println(err)
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("listening_list", &part, "update")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update listening part")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
 }
 
 // @Summary      获取听力篇列表

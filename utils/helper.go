@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"math/rand"
 	"regexp"
 	"strconv"
@@ -38,15 +39,25 @@ func HandleResponse(c *gin.Context, statusCode int, data interface{}, message st
 	c.JSON(statusCode, gin.H{"code": statusCode, "data": data, "message": message})
 }
 
-// 解析逗号分隔的字符串为整数数组
-func StringToList(partListStr string) []int {
-    parts := strings.Split(partListStr, ",")
-    var partList []int
-    for _, part := range parts {
-        part = strings.TrimSpace(part) // 去除字符串两端的空格
-        if id, err := strconv.Atoi(part); err == nil {
-            partList = append(partList, id)
-        }
-    }
-    return partList
+// StringToList 将字符串形式的数组转换为整数数组
+func StringToList(str string) []int {
+    // 去掉前后的中括号
+    str = strings.Trim(str, "[]")
+
+    // 通过逗号分割字符串
+	re := regexp.MustCompile(`\s*,\s*`)
+	strValues := re.Split(str, -1)
+
+    // 初始化整数数组
+    intValues := make([]int, 0, len(strValues))
+    // 遍历字符串数组并转换为整数
+    for _, strVal := range strValues {
+		strVal = strings.TrimSpace(strVal)
+		if intVal, err := strconv.Atoi(strVal); err == nil {
+			intValues = append(intValues, intVal)
+		} else {
+			fmt.Println("Error converting:", strVal, err)
+		}
+	}
+    return intValues
 }

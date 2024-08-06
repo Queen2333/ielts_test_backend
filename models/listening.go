@@ -9,6 +9,15 @@ type ListeningItem struct {
 	PartList			[]ListeningPartItem	`json:"part_list"`
 }
 
+type BasicListeningItem struct {
+	ID 					int					`json:"id,omitempty"`
+	Name				string				`json:"name"`
+	Status    			int    				`json:"status"`
+	Type      			int    				`json:"type"`
+	AudioFiles 			[]string			`json:"audio_files"`
+	PartList			[]int				`json:"part_list"`
+}
+
 type ListeningPartItem struct {
 	ID 					int					`json:"id,omitempty"`
 	Name				string				`json:"name"`
