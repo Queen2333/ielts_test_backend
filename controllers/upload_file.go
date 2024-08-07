@@ -35,7 +35,7 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	baseURL := fmt.Sprintf("%s://%s", c.Request.URL.Scheme, c.Request.Host)
+	baseURL := fmt.Sprintf("%s%s", c.Request.URL.Scheme, c.Request.Host)
 	fileURL := strings.Join([]string{baseURL, "uploads", filename}, "/")
 
 	utils.HandleResponse(c, http.StatusOK, fileURL, "Success")

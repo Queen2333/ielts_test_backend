@@ -15,7 +15,8 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
+	r.Static("/uploads", "./uploads")
+	
 	r.Use(func(c *gin.Context) {
 		if c.Request.URL.Path != "/login" && c.Request.URL.Path != "/send-code" {
 			middlewares.JWTAuthMiddleware()(c)
@@ -39,7 +40,6 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/config/listening-part/update", controllers.UpdateListeningPart)
 
 	r.POST("/upload/file", controllers.UploadFile)
-
 
 	// r.GET("/users", controllers.GetAllUser)
 	// r.POST("/create-user", controllers.CreateUser)
