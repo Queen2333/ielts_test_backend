@@ -1,8 +1,10 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"path/filepath"
+	"strings"
 
 	"github.com/Queen2333/ielts_test_backend/utils"
 	"github.com/gin-gonic/gin"
@@ -33,5 +35,8 @@ func UploadFile(c *gin.Context) {
 		return
 	}
 
-	utils.HandleResponse(c, http.StatusOK, filename, "Success")
+	baseURL := fmt.Sprintf("%s://%s", c.Request.URL.Scheme, c.Request.Host)
+	fileURL := strings.Join([]string{baseURL, "uploads", filename}, "/")
+
+	utils.HandleResponse(c, http.StatusOK, fileURL, "Success")
 }
