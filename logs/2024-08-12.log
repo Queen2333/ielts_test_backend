@@ -1,0 +1,7 @@
+time="2024-08-12T08:09:28+08:00" level=info msg="Request: POST /send-code?email=majestyye%40gmail.com"
+time="2024-08-12T08:09:38+08:00" level=info msg="Request: POST /login?code=066021&email=majestyye%40gmail.com"
+time="2024-08-12T08:09:55+08:00" level=info msg="Request: GET /user-info?"
+time="2024-08-12T08:10:03+08:00" level=info msg="Request: GET /config/listening/list?PageLimit=10&PageNo=1"
+time="2024-08-12T08:10:10+08:00" level=info msg="Request: GET /config/listening-part/list?PageLimit=10&PageNo=1"
+time="2024-08-12T08:18:59+08:00" level=info msg="Request: POST /upload/file?"
+time="2024-08-12T08:42:43+08:00" level=info msg="Request: POST /upload/file?"
