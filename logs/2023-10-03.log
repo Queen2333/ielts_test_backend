@@ -1,5 +1,0 @@
-time="2023-10-03T15:33:22+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
-time="2023-10-03T15:34:10+08:00" level=info msg="Request: POST /login?email=breaknameyang%40gmail.com&password=password&username=user"
-time="2023-10-03T15:34:20+08:00" level=info msg="Request: GET /login?"
-time="2023-10-03T15:34:20+08:00" level=info msg="Request: GET /favicon.ico?"
-time="2023-10-03T15:34:22+08:00" level=info msg="Request: GET /login?"

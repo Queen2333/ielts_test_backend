@@ -5,6 +5,8 @@
 .DS_Store
 .idea
 
-./logs/*.log
+logs/
+*.log
 
 main
+.venv/

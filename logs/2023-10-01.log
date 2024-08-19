@@ -1,4 +1,0 @@
-time="2023-10-01T22:59:06+08:00" level=info msg="Request: GET /users?"
-time="2023-10-01T22:59:47+08:00" level=info msg="Request: POST /create-user?"
-time="2023-10-01T23:00:17+08:00" level=info msg="Request: POST /send-pin?"
-time="2023-10-01T23:05:16+08:00" level=info msg="Request: POST /send-pin?email=breaknameyang%40gmail.com"
