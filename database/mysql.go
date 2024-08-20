@@ -349,3 +349,37 @@ func isStructOrSlice(value reflect.Value) bool {
 		return false
 	}
 }
+
+// DeleteData 根据ID删除指定表中的数据
+func DeleteData(tableName string, idValue interface{}) (int, error) {
+	// 检查ID是否存在
+	exists, err := checkIDExists(tableName, idValue)
+	if err != nil {
+		return 0, fmt.Errorf("failed to check if ID exists: %w", err)
+	}
+
+	if !exists {
+		return 0, fmt.Errorf("wrong data: %v", "wrong id!")
+	}
+
+	// 构建删除语句
+	query := fmt.Sprintf("DELETE FROM %s WHERE id=?", tableName)
+
+	// 执行删除操作
+	result, err := db.Exec(query, idValue)
+	if err != nil {
+		return 0, fmt.Errorf("failed to execute delete query: %w", err)
+	}
+
+	// 获取受影响的行数
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return 0, fmt.Errorf("failed to get rows affected: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return 0, fmt.Errorf("no rows were deleted")
+	}
+
+	return int(rowsAffected), nil
+}
