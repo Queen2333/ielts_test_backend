@@ -295,3 +295,39 @@ func UpdateListeningPart(c *gin.Context) {
 	// 返回插入后的数据
 	utils.HandleResponse(c, http.StatusOK, result, "Success")
 }
+
+// @Summary 删除听力part
+// @Description 根据ID删除听力part
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param id path int true "听力partID"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 404 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/listening-part/delete/{id} [delete]
+func DeleteListeningPart(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid listening set ID")
+		return
+	}
+
+	// 执行删除操作
+	rowsAffected, err := database.DeleteData("listening_part_list", id)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to delete listening set")
+		return
+	}
+
+	// 检查是否有记录被删除
+	if rowsAffected == 0 {
+		utils.HandleResponse(c, http.StatusNotFound, "", "Listening set not found")
+		return
+	}
+
+	// 返回成功响应
+	utils.HandleResponse(c, http.StatusOK, nil, "Success")
+}
