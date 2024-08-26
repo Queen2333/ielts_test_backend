@@ -17,3 +17,15 @@ type ListeningListResponse struct {
     Items []ListeningItem 	`json:"items"`
     Total int               `json:"total"`
 }
+
+//阅读套题列表返回体
+type ReadingListResponse struct {
+    Items []ReadingItem 	`json:"items"`
+    Total int               `json:"total"`
+}
+
+//阅读part列表返回体
+type ReadingPartListResponse struct {
+    Items []ReadingPartItem `json:"items"`
+    Total int                 `json:"total"`
+}
