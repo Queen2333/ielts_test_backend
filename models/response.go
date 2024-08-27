@@ -27,5 +27,5 @@ type ReadingListResponse struct {
 //阅读part列表返回体
 type ReadingPartListResponse struct {
     Items []ReadingPartItem `json:"items"`
-    Total int                 `json:"total"`
+    Total int               `json:"total"`
 }

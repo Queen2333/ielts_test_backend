@@ -8,14 +8,13 @@ type ReadingItem struct {
 	PartList			[]ReadingPartItem	`json:"part_list"`
 }
 
-// type BasicListeningItem struct {
-// 	ID 					int					`json:"id,omitempty"`
-// 	Name				string				`json:"name"`
-// 	Status    			int    				`json:"status"`
-// 	Type      			int    				`json:"type"`
-// 	AudioFiles 			[]string			`json:"audio_files"`
-// 	PartList			[]int				`json:"part_list"`
-// }
+type BasicReadingItem struct {
+	ID 					int					`json:"id,omitempty"`
+	Name				string				`json:"name"`
+	Status    			int    				`json:"status"`
+	Type      			int    				`json:"type"`
+	PartList			[]int				`json:"part_list"`
+}
 
 type ReadingPartItem struct {
 	ID 					int					`json:"id,omitempty"`

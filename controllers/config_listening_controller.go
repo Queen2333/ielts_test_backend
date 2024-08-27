@@ -135,7 +135,7 @@ func AddListening(c *gin.Context) {
 // @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
-// @Router /config/listening/add [post]
+// @Router /config/listening/update [post]
 func UpdateListening(c *gin.Context) {
 	var part models.BasicListeningItem
 	if err := c.ShouldBindJSON(&part); err != nil {

@@ -43,6 +43,12 @@ func SetupRouter() *gin.Engine {
 
 	r.POST("/upload/file", controllers.UploadFile)
 
+	r.GET("/config/reading/list", controllers.ReadingList)
+	r.POST("/config/reading/add", controllers.AddReading)
+	r.PUT("/config/reading/update", controllers.UpdateReading)
+	r.DELETE("/config/reading/delete/:id", controllers.DeleteReading)
+
+
 	// r.GET("/users", controllers.GetAllUser)
 	// r.POST("/create-user", controllers.CreateUser)
 
