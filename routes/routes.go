@@ -49,6 +49,9 @@ func SetupRouter() *gin.Engine {
 	r.DELETE("/config/reading/delete/:id", controllers.DeleteReading)
 
 	r.GET("/config/reading-part/list", controllers.ReadingPartList)
+	r.POST("/config/reading-part/add", controllers.AddReadingPart)
+	r.PUT("/config/reading-part/update", controllers.UpdateReadingPart)
+	r.DELETE("/config/reading-part/delete/:id", controllers.DeleteReadingPart)
 	// r.GET("/users", controllers.GetAllUser)
 	// r.POST("/create-user", controllers.CreateUser)
 

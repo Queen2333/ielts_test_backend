@@ -238,3 +238,96 @@ func ReadingPartList(c * gin.Context) {
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }
+
+// @Summary 新增阅读part
+// @Description 新增阅读part
+// @Tags Reading
+// @Accept json
+// @Produce json
+// @Param part body models.ReadingPartItem true "阅读part内容"
+// @Success 200 {object} models.ResponseData{data=models.ReadingPartItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/reading-part/add [post]
+func AddReadingPart(c *gin.Context) {
+	var part models.ReadingPartItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("reading_part_list", &part, "create")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to insert reading part")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 更新阅读part
+// @Description 更新阅读part
+// @Tags Reading
+// @Accept json
+// @Produce json
+// @Param part body models.ReadingPartItem true "阅读part内容"
+// @Success 200 {object} models.ResponseData{data=models.ReadingPartItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/reading-part/update [put]
+func UpdateReadingPart(c *gin.Context) {
+	var part models.ReadingPartItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("reading_part_list", &part, "update")
+	fmt.Println(err, "err")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update reading part")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 删除阅读part
+// @Description 根据ID删除阅读part
+// @Tags Reading
+// @Accept json
+// @Produce json
+// @Param id path int true "阅读partID"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 404 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/reading-part/delete/{id} [delete]
+func DeleteReadingPart(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid reading set ID")
+		return
+	}
+
+	// 执行删除操作
+	rowsAffected, err := database.DeleteData("reading_part_list", id)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to delete reading set")
+		return
+	}
+
+	// 检查是否有记录被删除
+	if rowsAffected == 0 {
+		utils.HandleResponse(c, http.StatusNotFound, "", "reading set not found")
+		return
+	}
+
+	// 返回成功响应
+	utils.HandleResponse(c, http.StatusOK, nil, "Success")
+}
