@@ -190,3 +190,51 @@ func DeleteReading(c *gin.Context) {
 	// 返回成功响应
 	utils.HandleResponse(c, http.StatusOK, nil, "Success")
 }
+
+// @Summary      获取阅读篇列表
+// @Description  根据条件获取阅读part列表，并返回分页结果
+// @Tags         Reading
+// @Accept       json
+// @Produce      json
+// @Param        name      query  string  false  "试题名称"
+// @Param        status    query  int     false  "试题状态"
+// @Param        type      query  int     false  "试题类型"
+// @Param        pageNo    query  int     true   "页码"
+// @Param        pageLimit query  int     false   "每页条数"
+// @Success      200  {object}  models.ResponseData{data=models.ReadingPartListResponse}
+// @Failure      400  {object}  models.ResponseData{data=nil}
+// @Failure      500  {object}  models.ResponseData{data=nil}
+// @Router       /config/reading-part/list [post]
+func ReadingPartList(c * gin.Context) {
+	var request struct {
+		Name      string `json:"name,omitempty"`
+		Status    int    `json:"status,omitempty"`
+		Type      int    `json:"type,omitempty"`
+		PageNo    int    `json:"pageNo"`
+		PageLimit int    `json:"pageLimit,omitempty"`
+	}
+	if err := c.ShouldBindJSON(&request); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 构建查询条件
+    conditions := make(map[string]interface{})
+	if request.Name != "" {
+        conditions["name"] = request.Name
+    }
+
+	// 执行分页查询
+    results, total, err := database.PaginationQuery("reading_part_list", request.PageNo, request.PageLimit, conditions)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to execute pagination query")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"items": results,
+		"total":   total,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
