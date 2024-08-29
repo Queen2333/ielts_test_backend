@@ -29,3 +29,9 @@ type ReadingPartListResponse struct {
     Items []ReadingPartItem `json:"items"`
     Total int               `json:"total"`
 }
+
+//写作套题列表返回体
+type WritingListResponse struct {
+    Items []WritingPartItem `json:"items"`
+    Total int               `json:"total"`
+}

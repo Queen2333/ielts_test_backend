@@ -52,15 +52,9 @@ func SetupRouter() *gin.Engine {
 	r.POST("/config/reading-part/add", controllers.AddReadingPart)
 	r.PUT("/config/reading-part/update", controllers.UpdateReadingPart)
 	r.DELETE("/config/reading-part/delete/:id", controllers.DeleteReadingPart)
-	// r.GET("/users", controllers.GetAllUser)
-	// r.POST("/create-user", controllers.CreateUser)
 
-	// 执行Python脚本
-	// r.GET("/execute-open-the-door", controllers.ExecutePythonScriptHandler)
-
-	// Define routes and their handlers.
-
-	// r.GET("/products/:id", middlewares.JWTAuthMiddleware(), controllers.GetProductByID)
+	r.GET("/config/writing/list", controllers.WritingList)
+	r.POST("/config/writing/add", controllers.AddWriting)
 
 	// 使用 Swagger UI 中间件
 	return r
