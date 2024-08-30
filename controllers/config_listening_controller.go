@@ -25,7 +25,7 @@ import (
 // @Success 200 {object} models.ResponseData{data=models.ListeningListResponse}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
-// @Router /config/listening/list [post]
+// @Router /config/listening/list [get]
 func ListeningList(c *gin.Context) {
 
 	var request struct {
@@ -135,7 +135,7 @@ func AddListening(c *gin.Context) {
 // @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
-// @Router /config/listening/update [post]
+// @Router /config/listening/update [put]
 func UpdateListening(c *gin.Context) {
 	var part models.BasicListeningItem
 	if err := c.ShouldBindJSON(&part); err != nil {
@@ -204,7 +204,7 @@ func DeleteListening(c *gin.Context) {
 // @Success      200  {object}  models.ResponseData{data=models.ListeningPartListResponse}
 // @Failure      400  {object}  models.ResponseData{data=nil}
 // @Failure      500  {object}  models.ResponseData{data=nil}
-// @Router       /config/listening-part/list [post]
+// @Router       /config/listening-part/list [get]
 func ListeningPartList(c * gin.Context) {
 	var request struct {
 		Name      string `json:"name,omitempty"`

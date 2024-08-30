@@ -25,7 +25,7 @@ import (
 // @Success 200 {object} models.ResponseData{data=models.ReadingListResponse}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
-// @Router /config/reading/list [post]
+// @Router /config/reading/list [get]
 func ReadingList(c *gin.Context) {
 
 	var request struct {
@@ -135,7 +135,7 @@ func AddReading(c *gin.Context) {
 // @Success 200 {object} models.ResponseData{data=models.BasicReadingItem}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
-// @Router /config/reading/update [post]
+// @Router /config/reading/update [put]
 func UpdateReading(c *gin.Context) {
 	var part models.BasicReadingItem
 	if err := c.ShouldBindJSON(&part); err != nil {
@@ -204,7 +204,7 @@ func DeleteReading(c *gin.Context) {
 // @Success      200  {object}  models.ResponseData{data=models.ReadingPartListResponse}
 // @Failure      400  {object}  models.ResponseData{data=nil}
 // @Failure      500  {object}  models.ResponseData{data=nil}
-// @Router       /config/reading-part/list [post]
+// @Router       /config/reading-part/list [get]
 func ReadingPartList(c * gin.Context) {
 	var request struct {
 		Name      string `json:"name,omitempty"`

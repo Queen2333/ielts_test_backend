@@ -31,6 +31,7 @@ func SetupRouter() *gin.Engine {
 	// r.POST("/register", controllers.RegisterUser)
 	r.GET("/user-info", controllers.GetUserInfo)
 
+	// 听力
 	r.GET("/config/listening/list", controllers.ListeningList)
 	r.POST("/config/listening/add", controllers.AddListening)
 	r.PUT("/config/listening/update", controllers.UpdateListening)
@@ -43,6 +44,7 @@ func SetupRouter() *gin.Engine {
 
 	r.POST("/upload/file", controllers.UploadFile)
 
+	// 阅读
 	r.GET("/config/reading/list", controllers.ReadingList)
 	r.POST("/config/reading/add", controllers.AddReading)
 	r.PUT("/config/reading/update", controllers.UpdateReading)
@@ -53,8 +55,16 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/config/reading-part/update", controllers.UpdateReadingPart)
 	r.DELETE("/config/reading-part/delete/:id", controllers.DeleteReadingPart)
 
+	// 写作
 	r.GET("/config/writing/list", controllers.WritingList)
 	r.POST("/config/writing/add", controllers.AddWriting)
+	r.PUT("/config/writing/update", controllers.UpdateWriting)
+	r.DELETE("/config/writing/delete/:id", controllers.DeleteWriting)
+
+	r.GET("/config/writing-part/list", controllers.WritingPartList)
+	r.POST("/config/writing-part/add", controllers.AddWritingPart)
+	r.PUT("/config/writing-part/update", controllers.UpdateWritingPart)
+	r.DELETE("/config/writing-part/delete/:id", controllers.DeleteWritingPart)
 
 	// 使用 Swagger UI 中间件
 	return r
