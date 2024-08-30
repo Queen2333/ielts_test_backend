@@ -97,6 +97,37 @@ func ListeningList(c *gin.Context) {
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }
 
+// @Summary 获取听力套题详情
+// @Description 根据id获取听力详情
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param id query int true "听力id"
+// @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/listening/detail/{id} [get]
+func ListeningDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid listening set ID")
+		return
+	}
+
+	record, err := database.GetDataById("listening_list", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
 // @Summary 新增听力套题
 // @Description 新增听力套题
 // @Tags Listening
@@ -235,6 +266,37 @@ func ListeningPartList(c * gin.Context) {
 	response := map[string]interface{}{
 		"items": results,
 		"total":   total,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 获取听力part详情
+// @Description 根据id获取听力part详情
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param id query int true "听力partid"
+// @Success 200 {object} models.ResponseData{data=models.ListeningPartItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/listening-part/detail/{id} [get]
+func ListeningPartDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid listening set ID")
+		return
+	}
+
+	record, err := database.GetDataById("listening_part_list", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }

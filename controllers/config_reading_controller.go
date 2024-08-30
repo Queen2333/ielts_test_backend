@@ -97,6 +97,37 @@ func ReadingList(c *gin.Context) {
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }
 
+// @Summary 获取阅读套题详情
+// @Description 根据id获取阅读详情
+// @Tags Reading
+// @Accept json
+// @Produce json
+// @Param id query int true "阅读id"
+// @Success 200 {object} models.ResponseData{data=models.BasicReadingItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/reading/detail/{id} [get]
+func ReadingDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid reading set ID")
+		return
+	}
+
+	record, err := database.GetDataById("reading_list", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
 // @Summary 新增阅读套题
 // @Description 新增阅读套题
 // @Tags Reading
@@ -235,6 +266,37 @@ func ReadingPartList(c * gin.Context) {
 	response := map[string]interface{}{
 		"items": results,
 		"total":   total,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 获取阅读part详情
+// @Description 根据id获取阅读part
+// @Tags Reading
+// @Accept json
+// @Produce json
+// @Param id query int true "阅读part id"
+// @Success 200 {object} models.ResponseData{data=models.ReadingPartItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/reading-part/detail/{id} [get]
+func ReadingPartDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid reading part set ID")
+		return
+	}
+
+	record, err := database.GetDataById("reading_part_list", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }

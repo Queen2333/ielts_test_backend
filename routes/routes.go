@@ -33,11 +33,13 @@ func SetupRouter() *gin.Engine {
 
 	// 听力
 	r.GET("/config/listening/list", controllers.ListeningList)
+	r.GET("/config/listening/detail/:id", controllers.ListeningDetail)
 	r.POST("/config/listening/add", controllers.AddListening)
 	r.PUT("/config/listening/update", controllers.UpdateListening)
 	r.DELETE("/config/listening/delete/:id", controllers.DeleteListening)
 
 	r.GET("/config/listening-part/list", controllers.ListeningPartList)
+	r.GET("/config/listening-part/detail/:id", controllers.ListeningPartDetail)
 	r.POST("/config/listening-part/add", controllers.AddListeningPart)
 	r.PUT("/config/listening-part/update", controllers.UpdateListeningPart)
 	r.DELETE("/config/listening-part/delete/:id", controllers.DeleteListeningPart)
@@ -46,22 +48,26 @@ func SetupRouter() *gin.Engine {
 
 	// 阅读
 	r.GET("/config/reading/list", controllers.ReadingList)
+	r.GET("/config/reading/detail/:id", controllers.ReadingDetail)
 	r.POST("/config/reading/add", controllers.AddReading)
 	r.PUT("/config/reading/update", controllers.UpdateReading)
 	r.DELETE("/config/reading/delete/:id", controllers.DeleteReading)
 
 	r.GET("/config/reading-part/list", controllers.ReadingPartList)
+	r.GET("/config/reading-part/detail/:id", controllers.ReadingPartDetail)
 	r.POST("/config/reading-part/add", controllers.AddReadingPart)
 	r.PUT("/config/reading-part/update", controllers.UpdateReadingPart)
 	r.DELETE("/config/reading-part/delete/:id", controllers.DeleteReadingPart)
 
 	// 写作
 	r.GET("/config/writing/list", controllers.WritingList)
+	r.GET("/config/writing/detail/:id", controllers.WritingDetail)
 	r.POST("/config/writing/add", controllers.AddWriting)
 	r.PUT("/config/writing/update", controllers.UpdateWriting)
 	r.DELETE("/config/writing/delete/:id", controllers.DeleteWriting)
 
 	r.GET("/config/writing-part/list", controllers.WritingPartList)
+	r.GET("/config/writing-part/detail/:id", controllers.WritingPartDetail)
 	r.POST("/config/writing-part/add", controllers.AddWritingPart)
 	r.PUT("/config/writing-part/update", controllers.UpdateWritingPart)
 	r.DELETE("/config/writing-part/delete/:id", controllers.DeleteWritingPart)

@@ -383,3 +383,46 @@ func DeleteData(tableName string, idValue interface{}) (int, error) {
 
 	return int(rowsAffected), nil
 }
+
+// GetDataById 根据ID查询表中的单条数据
+func GetDataById(tableName string, id int) (map[string]interface{}, error) {
+    query := fmt.Sprintf("SELECT * FROM %s WHERE id = ?", tableName)
+
+    row := db.QueryRow(query, id)
+
+    // 获取表的列名
+    columns, err := db.Query(fmt.Sprintf("SELECT * FROM %s WHERE 1=0", tableName))
+    if err != nil {
+        return nil, err
+    }
+    defer columns.Close()
+
+    columnNames, err := columns.Columns()
+    if err != nil {
+        return nil, err
+    }
+
+    // 创建一个用于接收值的 slice 和一个用于 Scan 的 slice
+    values := make([]interface{}, len(columnNames))
+    scanArgs := make([]interface{}, len(columnNames))
+    for i := range values {
+        scanArgs[i] = &values[i]
+    }
+
+    // 扫描查询结果
+    err = row.Scan(scanArgs...)
+    if err != nil {
+        if err == sql.ErrNoRows {
+            return nil, fmt.Errorf("no data found with id: %d", id)
+        }
+        return nil, err
+    }
+
+    // 将结果放入 map 中
+    result := make(map[string]interface{})
+    for i, col := range columnNames {
+        result[col] = convertType(values[i])
+    }
+
+    return result, nil
+}

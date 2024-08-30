@@ -97,6 +97,37 @@ func WritingList(c *gin.Context) {
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }
 
+// @Summary 获取写作套题详情
+// @Description 根据id获取写作详情
+// @Tags Writing
+// @Accept json
+// @Produce json
+// @Param id query int true "写作id"
+// @Success 200 {object} models.ResponseData{data=models.BasicWritingItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/writing/detail/{id} [get]
+func WritingDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid writing set ID")
+		return
+	}
+
+	record, err := database.GetDataById("writing_list", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
 // @Summary 新增写作套题
 // @Description 新增写作套题
 // @Tags Writing
@@ -236,6 +267,37 @@ func WritingPartList(c * gin.Context) {
 	response := map[string]interface{}{
 		"items": results,
 		"total":   total,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 获取写作part详情
+// @Description 根据id获取写作part详情
+// @Tags Writing
+// @Accept json
+// @Produce json
+// @Param id query int true "写作part id"
+// @Success 200 {object} models.ResponseData{data=models.WritingPartItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/writing-part/detail/{id} [get]
+func WritingPartDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid writing part set ID")
+		return
+	}
+
+	record, err := database.GetDataById("writing_part_list", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }
