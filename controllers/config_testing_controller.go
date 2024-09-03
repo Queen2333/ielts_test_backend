@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/Queen2333/ielts_test_backend/database"
+	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/Queen2333/ielts_test_backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -132,9 +133,147 @@ func TestingDetail(c *gin.Context) {
         return
     }
 
+	// 定义字段与对应表的映射关系
+	fieldToTableMap := map[string]string{
+		"reading_ids":   "reading_part_list",
+		"listening_ids": "listening_part_list",
+		"writing_ids":   "writing_part_list",
+	}
+
+	fieldToNameMap := map[string]string{
+		"reading_ids":   "reading_parts",
+		"listening_ids": "listening_parts",
+		"writing_ids":   "writing_parts",
+	}
+
+	for field, table := range fieldToTableMap {
+		partListInterface, ok := record[field].([]interface{})
+		if !ok {
+			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to parse part_list")
+			return
+		}
+
+		// 转换为字符串数组
+		var partListStrArray []string
+		for _, part := range partListInterface {
+			partListStrArray = append(partListStrArray, fmt.Sprint(part))
+		}
+
+		var partListStr = strings.Join(partListStrArray, ",")
+
+		partList := utils.StringToList(partListStr)
+
+		var details []map[string]interface{}
+		for _, id := range partList {
+			partDetail, err := database.GetPartsByIds(table, []int{id})
+			if err != nil {
+				utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to query testing parts")
+				return
+			}
+			if len(partDetail) > 0 {
+				details = append(details, partDetail[0])
+			}
+		}
+		record[fieldToNameMap[field]] = details
+	}
+
 	// 返回查询结果
 	response := map[string]interface{}{
 		"data": record,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 新增测试套题
+// @Description 新增测试套题
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param part body models.BasicTestingItem true "测试套题内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/testing/add [post]
+func AddTesting(c *gin.Context) {
+	var part models.BasicTestingItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		fmt.Println(err)
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("testing_list", &part, "create")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to insert testing part")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 更新测试套题
+// @Description 更新测试套题
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param part body models.BasicTestingItem true "测试套题内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/testing/update [put]
+func UpdateTesting(c *gin.Context) {
+	var part models.BasicTestingItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		fmt.Println(err)
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("testing_list", &part, "update")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update testing part")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 删除测试套题
+// @Description 根据ID删除测试套题
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param id path int true "测试套题ID"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 404 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /config/testing/delete/{id} [delete]
+func DeleteTesting(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid testing set ID")
+		return
+	}
+
+	// 执行删除操作
+	rowsAffected, err := database.DeleteData("testing_list", id)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to delete testing set")
+		return
+	}
+
+	// 检查是否有记录被删除
+	if rowsAffected == 0 {
+		utils.HandleResponse(c, http.StatusNotFound, "", "testing set not found")
+		return
+	}
+
+	// 返回成功响应
+	utils.HandleResponse(c, http.StatusOK, nil, "Success")
 }

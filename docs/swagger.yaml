@@ -33,6 +33,29 @@ definitions:
       type:
         type: integer
     type: object
+  models.BasicTestingItem:
+    properties:
+      id:
+        type: integer
+      listening_ids:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+      reading_ids:
+        items:
+          type: integer
+        type: array
+      status:
+        type: integer
+      type:
+        type: integer
+      writing_ids:
+        items:
+          type: integer
+        type: array
+    type: object
   models.BasicWritingItem:
     properties:
       id:
@@ -267,6 +290,38 @@ definitions:
       message:
         type: string
     type: object
+  models.TestingItem:
+    properties:
+      id:
+        type: integer
+      listening_parts:
+        items:
+          $ref: '#/definitions/models.ListeningPartItem'
+        type: array
+      name:
+        type: string
+      reading_parts:
+        items:
+          $ref: '#/definitions/models.ReadingPartItem'
+        type: array
+      status:
+        type: string
+      type:
+        type: string
+      writing_parts:
+        items:
+          $ref: '#/definitions/models.WritingPartItem'
+        type: array
+    type: object
+  models.TestingListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.TestingItem'
+        type: array
+      total:
+        type: integer
+    type: object
   models.UploadResponse:
     properties:
       url:
@@ -347,7 +402,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.ListeningPartItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -549,7 +604,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.ListeningPartItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -594,7 +649,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicListeningItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -691,7 +746,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicListeningItem'
+                  $ref: '#/definitions/models.ListeningItem'
               type: object
         "400":
           description: Bad Request
@@ -796,7 +851,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicListeningItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -841,7 +896,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.ReadingPartItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -1043,7 +1098,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.ReadingPartItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -1088,7 +1143,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicReadingItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -1185,7 +1240,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicReadingItem'
+                  $ref: '#/definitions/models.ReadingItem'
               type: object
         "400":
           description: Bad Request
@@ -1290,7 +1345,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicReadingItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -1313,6 +1368,253 @@ paths:
       summary: 更新阅读套题
       tags:
       - Reading
+  /config/testing/add:
+    post:
+      consumes:
+      - application/json
+      description: 新增测试套题
+      parameters:
+      - description: 测试套题内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.BasicTestingItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 新增测试套题
+      tags:
+      - Testing
+  /config/testing/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据ID删除测试套题
+      parameters:
+      - description: 测试套题ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 删除测试套题
+      tags:
+      - Testing
+  /config/testing/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据id获取测试详情
+      parameters:
+      - description: 测试id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TestingItem'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取测试套题详情
+      tags:
+      - Testing
+  /config/testing/list:
+    get:
+      consumes:
+      - application/json
+      description: 根据条件获取测试套题列表，并返回分页结果
+      parameters:
+      - description: 测试套题名称
+        in: query
+        name: name
+        type: string
+      - description: 测试套题状态
+        in: query
+        name: status
+        type: integer
+      - description: 试题类型
+        in: query
+        name: type
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNo
+        required: true
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageLimit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TestingListResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取测试套题套题列表
+      tags:
+      - Testing
+  /config/testing/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新测试套题
+      parameters:
+      - description: 测试套题内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.BasicTestingItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 更新测试套题
+      tags:
+      - Testing
   /config/writing-part/add:
     post:
       consumes:
@@ -1335,7 +1637,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.WritingPartItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -1537,7 +1839,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.WritingPartItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -1582,7 +1884,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicWritingItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
@@ -1679,7 +1981,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicWritingItem'
+                  $ref: '#/definitions/models.WritingItem'
               type: object
         "400":
           description: Bad Request
@@ -1784,7 +2086,7 @@ paths:
             - $ref: '#/definitions/models.ResponseData'
             - properties:
                 data:
-                  $ref: '#/definitions/models.BasicWritingItem'
+                  type: object
               type: object
         "400":
           description: Bad Request
