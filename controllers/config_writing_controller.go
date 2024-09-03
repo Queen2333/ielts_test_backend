@@ -103,7 +103,7 @@ func WritingList(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id query int true "写作id"
-// @Success 200 {object} models.ResponseData{data=models.BasicWritingItem}
+// @Success 200 {object} models.ResponseData{data=models.WritingItem}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/writing/detail/{id} [get]
@@ -134,7 +134,7 @@ func WritingDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.BasicWritingItem true "写作套题内容"
-// @Success 200 {object} models.ResponseData{data=models.BasicWritingItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/writing/add [post]
@@ -163,7 +163,7 @@ func AddWriting(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.BasicWritingItem true "写作套题内容"
-// @Success 200 {object} models.ResponseData{data=models.BasicWritingItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/writing/update [put]
@@ -308,7 +308,7 @@ func WritingPartDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.WritingPartItem true "写作part内容"
-// @Success 200 {object} models.ResponseData{data=models.WritingPartItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/writing-part/add [post]
@@ -336,7 +336,7 @@ func AddWritingPart(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.WritingPartItem true "写作part内容"
-// @Success 200 {object} models.ResponseData{data=models.WritingPartItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/writing-part/update [put]

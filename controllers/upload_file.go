@@ -17,9 +17,9 @@ import (
 // @Accept multipart/form-data
 // @Produce json
 // @Param file formData file true "上传的文件"
-// @Success 200 {object} map[string]string{"message": "string"}
-// @Failure 400 {object} map[string]string{"message": "string"}
-// @Failure 500 {object} map[string]string{"message": "string"}
+// @Success 200 {object} models.ResponseData{data=models.UploadResponse}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /upload [post]
 func UploadFile(c *gin.Context) {
 	// 获取文件

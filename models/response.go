@@ -32,12 +32,23 @@ type ReadingPartListResponse struct {
 
 //写作套题列表返回体
 type WritingListResponse struct {
-    Items []WritingItem `json:"items"`
+    Items []WritingItem     `json:"items"`
     Total int               `json:"total"`
 }
 
 //写作part列表返回体
 type WritingPartListResponse struct {
     Items []WritingPartItem `json:"items"`
+    Total int               `json:"total"`
+}
+
+// 上传文件返回体
+type UploadResponse struct {
+    Url   string            `json:"url"`
+}
+
+// 测试套题返回体
+type TestingListResponse struct {
+    Items []TestingItem     `json:"items"`
     Total int               `json:"total"`
 }

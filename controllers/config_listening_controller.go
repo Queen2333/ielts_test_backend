@@ -103,7 +103,7 @@ func ListeningList(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id query int true "听力id"
-// @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
+// @Success 200 {object} models.ResponseData{data=models.ListeningItem}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/listening/detail/{id} [get]
@@ -134,7 +134,7 @@ func ListeningDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.BasicListeningItem true "听力套题内容"
-// @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/listening/add [post]
@@ -163,7 +163,7 @@ func AddListening(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.BasicListeningItem true "听力套题内容"
-// @Success 200 {object} models.ResponseData{data=models.BasicListeningItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/listening/update [put]
@@ -307,7 +307,7 @@ func ListeningPartDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.ListeningPartItem true "听力part内容"
-// @Success 200 {object} models.ResponseData{data=models.ListeningPartItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/listening-part/add [post]
@@ -335,7 +335,7 @@ func AddListeningPart(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.ListeningPartItem true "听力part内容"
-// @Success 200 {object} models.ResponseData{data=models.ListeningPartItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/listening-part/update [put]

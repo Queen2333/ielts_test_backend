@@ -14,7 +14,7 @@ import (
 
 // @Summary 获取阅读套题列表
 // @Description 根据条件获取阅读列表，并返回分页结果
-// @Tags reading
+// @Tags Reading
 // @Accept json
 // @Produce json
 // @Param name query string false "阅读名称"
@@ -103,7 +103,7 @@ func ReadingList(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id query int true "阅读id"
-// @Success 200 {object} models.ResponseData{data=models.BasicReadingItem}
+// @Success 200 {object} models.ResponseData{data=models.ReadingItem}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/reading/detail/{id} [get]
@@ -134,7 +134,7 @@ func ReadingDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.BasicReadingItem true "阅读套题内容"
-// @Success 200 {object} models.ResponseData{data=models.BasicReadingItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/reading/add [post]
@@ -159,11 +159,11 @@ func AddReading(c *gin.Context) {
 
 // @Summary 更新阅读套题
 // @Description 更新阅读套题
-// @Tags reading
+// @Tags Reading
 // @Accept json
 // @Produce json
 // @Param part body models.BasicReadingItem true "阅读套题内容"
-// @Success 200 {object} models.ResponseData{data=models.BasicReadingItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/reading/update [put]
@@ -188,7 +188,7 @@ func UpdateReading(c *gin.Context) {
 
 // @Summary 删除阅读套题
 // @Description 根据ID删除阅读套题
-// @Tags reading
+// @Tags Reading
 // @Accept json
 // @Produce json
 // @Param id path int true "阅读套题ID"
@@ -307,7 +307,7 @@ func ReadingPartDetail(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.ReadingPartItem true "阅读part内容"
-// @Success 200 {object} models.ResponseData{data=models.ReadingPartItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/reading-part/add [post]
@@ -335,7 +335,7 @@ func AddReadingPart(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param part body models.ReadingPartItem true "阅读part内容"
-// @Success 200 {object} models.ResponseData{data=models.ReadingPartItem}
+// @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /config/reading-part/update [put]

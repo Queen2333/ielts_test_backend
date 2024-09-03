@@ -72,6 +72,10 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/config/writing-part/update", controllers.UpdateWritingPart)
 	r.DELETE("/config/writing-part/delete/:id", controllers.DeleteWritingPart)
 
+	// 测试 套题
+	r.GET("/config/testing/list", controllers.TestingList)
+	r.GET("/config/testing/detail/:id", controllers.TestingDetail)
+
 	// 使用 Swagger UI 中间件
 	return r
 }
