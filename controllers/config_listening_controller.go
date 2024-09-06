@@ -28,26 +28,28 @@ import (
 // @Router /config/listening/list [get]
 func ListeningList(c *gin.Context) {
 
-	var request struct {
-		Name      string `json:"name,omitempty"`
-		Status    int    `json:"status,omitempty"`
-		Type      int    `json:"type,omitempty"`
-		PageNo    int    `json:"pageNo"`
-		PageLimit int    `json:"pageLimit,omitempty"`
+	pageNo := c.Query("pageNo")
+	pageLimit := c.Query("pageLimit")
+
+	// 解析 PageNo 和 PageLimit，如果它们不存在，设置默认值
+	pageNoInt, _ := strconv.Atoi(pageNo)
+	if pageNoInt == 0 {
+		pageNoInt = 1 // 默认值
 	}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+	pageLimitInt, _ := strconv.Atoi(pageLimit)
+	if pageLimitInt == 0 {
+		pageLimitInt = 10 // 默认值
+	}
+
+	conditions, err := utils.ProcessRequest(c)
+	if err != nil {
+		// 错误处理已在 ProcessRequest 中处理
 		return
 	}
 
-	// 构建查询条件
-    conditions := make(map[string]interface{})
-	if request.Name != "" {
-        conditions["name"] = request.Name
-    }
-
+	
 	// 执行分页查询
-    results, total, err := database.PaginationQuery("listening_list", request.PageNo, request.PageLimit, conditions)
+    results, total, err := database.PaginationQuery("listening_list", pageNoInt, pageLimitInt, conditions)
     if err != nil {
         utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to execute pagination query")
         return

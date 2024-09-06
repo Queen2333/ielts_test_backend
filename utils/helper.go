@@ -1,13 +1,16 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"net/http"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -60,4 +63,51 @@ func StringToList(str string) []int {
 		}
 	}
     return intValues
+}
+
+func ProcessRequest(c *gin.Context) (map[string]interface{}, error) {
+	var request struct {
+		Name      string `json:"name,omitempty"`
+		Status    *int   `json:"status,omitempty"`  // Use a pointer to check if the field is set
+		Type      *int   `json:"type,omitempty"`    // Use a pointer to check if the field is set
+		// PageNo    int    `json:"pageNo"`
+		// PageLimit int    `json:"pageLimit,omitempty"`
+	}
+
+	if err := c.ShouldBindJSON(&request); err != nil {
+		HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return nil, err
+	}
+
+	conditions := make(map[string]interface{})
+	if request.Status != nil {
+		conditions["status"] = *request.Status
+	}
+	if request.Type != nil {
+		conditions["type"] = *request.Type
+		if *request.Type == 3 {
+			authHeader := c.GetHeader("Authorization")
+			token := strings.TrimPrefix(authHeader, "Bearer ")
+
+			InitRedis()
+			val, err := Get(token)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user in Redis"})
+				return nil, err
+			}
+			
+			var userInfo models.UserQuery
+			err = json.Unmarshal([]byte(val), &userInfo)
+			if err != nil {
+				HandleResponse(c, http.StatusInternalServerError, "", "Failed to parse token data")
+				return nil, err
+			}
+			conditions["user_id"] = userInfo.ID
+		}
+	}
+	if request.Name != "" {
+		conditions["name"] = request.Name
+	}
+
+	return conditions, nil
 }
