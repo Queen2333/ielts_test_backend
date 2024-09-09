@@ -106,7 +106,7 @@ func ProcessRequest(c *gin.Context) (map[string]interface{}, error) {
 		}
 	}
 	if request.Name != "" {
-		conditions["name"] = request.Name
+		conditions["name"] = "%" + request.Name + "%"
 	}
 
 	return conditions, nil

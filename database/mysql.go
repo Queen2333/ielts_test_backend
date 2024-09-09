@@ -43,12 +43,19 @@ func IsNoRowsError(err error) bool {
 
 // PaginationQuery 封装分页查询列表的方法
 func PaginationQuery(tableName string, pageNo, pageLimit int, conditions map[string]interface{}) ([]map[string]interface{}, int, error) {
+
 	// 构建查询条件
 	var args []interface{}
 	var conditionsStr string
 	for key, value := range conditions {
-		conditionsStr += fmt.Sprintf(" AND %s = ?", key)
-		args = append(args, value)
+		if key == "name" {
+			conditionsStr += fmt.Sprintf(" AND %s LIKE ?", key)
+			// 将 name 字段的值包裹在 % 符号中，实现模糊查询
+			args = append(args, fmt.Sprintf("%%%s%%", value))
+		} else {
+			conditionsStr += fmt.Sprintf(" AND %s = ?", key)
+			args = append(args, value)
+		}
 	}
 
 	// 查询总数
