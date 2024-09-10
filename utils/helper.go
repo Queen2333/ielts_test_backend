@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math/rand"
 	"net/http"
@@ -66,18 +67,20 @@ func StringToList(str string) []int {
 }
 
 func ProcessRequest(c *gin.Context) (map[string]interface{}, error) {
+
 	var request struct {
-		Name      string `json:"name,omitempty"`
-		Status    *int   `json:"status,omitempty"`  // Use a pointer to check if the field is set
-		Type      *int   `json:"type,omitempty"`    // Use a pointer to check if the field is set
-		// PageNo    int    `json:"pageNo"`
-		// PageLimit int    `json:"pageLimit,omitempty"`
+		Name   string 	`form:"name,omitempty"`  // form 标签表示从 URL 查询参数中获取
+		Status *int   	`form:"status,omitempty"` 
+		Type   *int   	`form:"type,omitempty"`
 	}
 
-	if err := c.ShouldBindJSON(&request); err != nil {
+	if err := c.ShouldBindQuery(&request); err != nil {
+		fmt.Println("Error binding query:", err)
 		HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
 		return nil, err
 	}
+
+	fmt.Printf("Request: %+v\n", request)
 
 	conditions := make(map[string]interface{})
 	if request.Status != nil {
@@ -86,23 +89,13 @@ func ProcessRequest(c *gin.Context) (map[string]interface{}, error) {
 	if request.Type != nil {
 		conditions["type"] = *request.Type
 		if *request.Type == 3 {
-			authHeader := c.GetHeader("Authorization")
-			token := strings.TrimPrefix(authHeader, "Bearer ")
-
-			InitRedis()
-			val, err := Get(token)
+			userID, err := GetUserIDFromToken(c)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user in Redis"})
+				// 处理获取 user_id 失败的情况
+				HandleResponse(c, http.StatusUnauthorized, "", err.Error())
 				return nil, err
 			}
-			
-			var userInfo models.UserQuery
-			err = json.Unmarshal([]byte(val), &userInfo)
-			if err != nil {
-				HandleResponse(c, http.StatusInternalServerError, "", "Failed to parse token data")
-				return nil, err
-			}
-			conditions["user_id"] = userInfo.ID
+			conditions["user_id"] = userID
 		}
 	}
 	if request.Name != "" {
@@ -110,4 +103,41 @@ func ProcessRequest(c *gin.Context) (map[string]interface{}, error) {
 	}
 
 	return conditions, nil
+}
+func GetUserIDFromToken(c *gin.Context) (string, error) {
+	// 获取 Authorization 头中的 token
+	authHeader := c.GetHeader("Authorization")
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// 检查 token 是否为空
+	if token == "" {
+		return "", errors.New("missing token in Authorization header")
+	}
+
+	// 初始化 Redis 并获取 user 信息
+	InitRedis()
+	val, err := Get(token)
+	if err != nil {
+		return "", errors.New("failed to retrieve user from Redis")
+	}
+
+	// 检查 Redis 中是否有对应的用户数据
+	if val == "" {
+		return "", errors.New("no user data found for the provided token")
+	}
+
+	// 解析 user 信息
+	var userInfo models.UserQuery
+	err = json.Unmarshal([]byte(val), &userInfo)
+	if err != nil {
+		return "", errors.New("failed to parse user data from Redis")
+	}
+
+	// 检查解析后的 user 信息
+	if userInfo.ID == "" {
+		return "", errors.New("invalid user data: missing user ID")
+	}
+
+	// 返回 user_id
+	return userInfo.ID, nil
 }

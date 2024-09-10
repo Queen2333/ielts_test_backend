@@ -16,6 +16,7 @@ type BasicListeningItem struct {
 	Type      			int    				`json:"type"`
 	AudioFiles 			[]string			`json:"audio_files"`
 	PartList			[]int				`json:"part_list"`
+	UserID				string				`json:"user_id,omitempty"`
 }
 
 type ListeningPartItem struct {

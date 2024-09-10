@@ -28,18 +28,8 @@ import (
 // @Router /config/listening/list [get]
 func ListeningList(c *gin.Context) {
 
-	pageNo := c.Query("pageNo")
-	pageLimit := c.Query("pageLimit")
-
-	// 解析 PageNo 和 PageLimit，如果它们不存在，设置默认值
-	pageNoInt, _ := strconv.Atoi(pageNo)
-	if pageNoInt == 0 {
-		pageNoInt = 1 // 默认值
-	}
-	pageLimitInt, _ := strconv.Atoi(pageLimit)
-	if pageLimit == "" || pageLimitInt <= 0 {
-		pageLimitInt = -1 // 默认值
-	}
+	pageNo, _ := strconv.Atoi(c.DefaultQuery("pageNo", "1"))
+	pageLimit, _ := strconv.Atoi(c.DefaultQuery("pageLimit", "-1"))
 
 	conditions, err := utils.ProcessRequest(c)
 	if err != nil {
@@ -49,7 +39,7 @@ func ListeningList(c *gin.Context) {
 
 	
 	// 执行分页查询
-    results, total, err := database.PaginationQuery("listening_list", pageNoInt, pageLimitInt, conditions)
+    results, total, err := database.PaginationQuery("listening_list", pageNo, pageLimit, conditions)
     if err != nil {
         utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to execute pagination query")
         return
@@ -148,6 +138,18 @@ func AddListening(c *gin.Context) {
 		return
 	}
 
+	if part.Type == 3 {
+		userID, err := utils.GetUserIDFromToken(c)
+		if err != nil {
+			// 处理获取 user_id 失败的情况
+			utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+			return
+		}
+
+		// 将 user_id 添加到 part 中
+		part.UserID = userID
+	}
+
 	// 将数据插入数据库
 	result, err := database.InsertData("listening_list", &part, "create")
 	if err != nil {
@@ -239,26 +241,17 @@ func DeleteListening(c *gin.Context) {
 // @Failure      500  {object}  models.ResponseData{data=nil}
 // @Router       /config/listening-part/list [get]
 func ListeningPartList(c * gin.Context) {
-	pageNo := c.Query("pageNo")
-	pageLimit := c.Query("pageLimit")
-
-	// 解析 PageNo 和 PageLimit，如果它们不存在，设置默认值
-	pageNoInt, _ := strconv.Atoi(pageNo)
-	if pageNoInt == 0 {
-		pageNoInt = 1 // 默认值
-	}
-	pageLimitInt, _ := strconv.Atoi(pageLimit)
-	if pageLimit == "" || pageLimitInt == 0 {
-		pageLimitInt = -1 // 默认值
-	}
+	pageNo, _ := strconv.Atoi(c.DefaultQuery("pageNo", "1"))
+	pageLimit, _ := strconv.Atoi(c.DefaultQuery("pageLimit", "-1"))
 
 	conditions, err := utils.ProcessRequest(c)
 	if err != nil {
+		// 错误处理已在 ProcessRequest 中处理
 		return
 	}
 
 	// 执行分页查询
-    results, total, err := database.PaginationQuery("listening_part_list", pageNoInt, pageLimitInt, conditions)
+    results, total, err := database.PaginationQuery("listening_part_list", pageNo, pageLimit, conditions)
     if err != nil {
         utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to execute pagination query")
         return

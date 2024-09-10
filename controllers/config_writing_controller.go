@@ -28,26 +28,17 @@ import (
 // @Router /config/writing/list [get]
 func WritingList(c *gin.Context) {
 
-	var request struct {
-		Name      string `json:"name,omitempty"`
-		Status    int    `json:"status,omitempty"`
-		Type      int    `json:"type,omitempty"`
-		PageNo    int    `json:"pageNo"`
-		PageLimit int    `json:"pageLimit,omitempty"`
-	}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+	pageNo, _ := strconv.Atoi(c.DefaultQuery("pageNo", "1"))
+	pageLimit, _ := strconv.Atoi(c.DefaultQuery("pageLimit", "-1"))
+
+	conditions, err := utils.ProcessRequest(c)
+	if err != nil {
+		// 错误处理已在 ProcessRequest 中处理
 		return
 	}
 
-	// 构建查询条件
-    conditions := make(map[string]interface{})
-	if request.Name != "" {
-        conditions["name"] = request.Name
-    }
-
 	// 执行分页查询
-    results, total, err := database.PaginationQuery("writing_list", request.PageNo, request.PageLimit, conditions)
+    results, total, err := database.PaginationQuery("writing_list", pageNo, pageLimit, conditions)
     if err != nil {
         utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to execute pagination query")
         return
@@ -237,27 +228,17 @@ func DeleteWriting(c *gin.Context) {
 // @Failure      500  {object}  models.ResponseData{data=nil}
 // @Router       /config/writing-part/list [get]
 func WritingPartList(c * gin.Context) {
-	var request struct {
-		Name      string `json:"name,omitempty"`
-		Status    int    `json:"status,omitempty"`
-		Type      int    `json:"type,omitempty"`
-		Source 	  int	 `json:"source,omitempty"`
-		PageNo    int    `json:"pageNo"`
-		PageLimit int    `json:"pageLimit,omitempty"`
-	}
-	if err := c.ShouldBindJSON(&request); err != nil {
-		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+	pageNo, _ := strconv.Atoi(c.DefaultQuery("pageNo", "1"))
+	pageLimit, _ := strconv.Atoi(c.DefaultQuery("pageLimit", "-1"))
+
+	conditions, err := utils.ProcessRequest(c)
+	if err != nil {
+		// 错误处理已在 ProcessRequest 中处理
 		return
 	}
 
-	// 构建查询条件
-    conditions := make(map[string]interface{})
-	if request.Name != "" {
-        conditions["name"] = request.Name
-    }
-
 	// 执行分页查询
-    results, total, err := database.PaginationQuery("writing_part_list", request.PageNo, request.PageLimit, conditions)
+    results, total, err := database.PaginationQuery("writing_part_list", pageNo, pageLimit, conditions)
     if err != nil {
         utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to execute pagination query")
         return
