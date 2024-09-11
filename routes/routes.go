@@ -79,6 +79,9 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/config/testing/update", controllers.UpdateTesting)
 	r.DELETE("/config/testing/delete/:id", controllers.DeleteTesting)
 
+	// 做题记录
+	r.GET("/config/listening-record/list", controllers.ListeningRecords)
+
 	// 使用 Swagger UI 中间件
 	return r
 }

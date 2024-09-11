@@ -52,3 +52,8 @@ type TestingListResponse struct {
     Items []TestingItem     `json:"items"`
     Total int               `json:"total"`
 }
+
+type ListeningRecordsResponse struct {
+    Items []ListeningRecordsItem 	`json:"items"`
+    Total int                       `json:"total"`
+}
