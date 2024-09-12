@@ -19,3 +19,12 @@ type BasicTestingItem struct {
 	ReadingIDs			[]int				`json:"reading_ids"`
 	WritingIDs			[]int				`json:"writing_ids"`
 }
+type TestingRecordsItem struct {
+	ID 					int					`json:"id"`
+	Name				string				`json:"name"`
+	Status				string				`json:"status"`
+	Type				string				`json:"type"`
+	Score				int					`json:"score,omitempty"`
+	Answers				[]string			`json:"answers"`
+	UserID				string				`json:"user_id"`
+}

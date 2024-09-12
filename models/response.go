@@ -57,3 +57,18 @@ type ListeningRecordsResponse struct {
     Items []ListeningRecordsItem 	`json:"items"`
     Total int                       `json:"total"`
 }
+
+type ReadingRecordsResponse struct {
+    Items []ReadingRecordsItem 	    `json:"items"`
+    Total int                       `json:"total"`
+}
+
+type WritingRecordsResponse struct {
+    Items []WritingRecordsItem 	    `json:"items"`
+    Total int                       `json:"total"`
+}
+
+type TestingRecordsResponse struct {
+    Items []TestingRecordsItem 	    `json:"items"`
+    Total int                       `json:"total"`
+}
