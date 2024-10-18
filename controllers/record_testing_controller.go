@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/Queen2333/ielts_test_backend/database"
+	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/Queen2333/ielts_test_backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -48,4 +50,129 @@ func TestingRecords(c *gin.Context) {
 		"total":   total,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 获取测试做题记录详情
+// @Description 根据id获取测试做题记录详情
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param id query int true "测试做题记录id"
+// @Success 200 {object} models.ResponseData{data=models.TestingRecordsItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/testing/detail/{id} [get]
+func TestingRecordDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid testing record ID")
+		return
+	}
+
+	record, err := database.GetDataById("testing_records", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 新增测试做题记录
+// @Description 新增测试做题记录
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param part body models.TestingRecordsItem true "测试做题记录内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/testing/add [post]
+func AddTestingRecord(c *gin.Context) {
+	var part models.TestingRecordsItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		fmt.Println(err)
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("testing_records", &part, "create")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to insert testing records")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 更新测试做题记录
+// @Description 更新测试做题记录
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param part body models.TestingRecordsItem true "测试做题记录内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/testing/update [put]
+func UpdateTestingRecord(c *gin.Context) {
+	var part models.TestingRecordsItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("testing_records", &part, "update")
+	fmt.Println(err, "err")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update testing record")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 删除测试做题记录
+// @Description 根据ID删除测试做题记录
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param id path int true "测试做题记录ID"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 404 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/testing/delete/{id} [delete]
+func DeleteTestingRecord(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid testing record ID")
+		return
+	}
+
+	// 执行删除操作
+	rowsAffected, err := database.DeleteData("testing_records", id)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to delete testing record")
+		return
+	}
+
+	// 检查是否有记录被删除
+	if rowsAffected == 0 {
+		utils.HandleResponse(c, http.StatusNotFound, "", "testing record not found")
+		return
+	}
+
+	// 返回成功响应
+	utils.HandleResponse(c, http.StatusOK, nil, "Success")
 }

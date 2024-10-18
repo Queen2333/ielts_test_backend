@@ -1,10 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/Queen2333/ielts_test_backend/database"
+	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/Queen2333/ielts_test_backend/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -16,7 +18,7 @@ import (
 // @Produce json
 // @Param name query string false "名称"
 // @Param status query int false "状态"
-// @Param type query int false "试题类型"
+// @Param type query int true "3"
 // @Param pageNo query int true "页码"
 // @Param pageLimit query int false "每页条数"
 // @Success 200 {object} models.ResponseData{data=models.ListeningRecordsResponse}
@@ -48,4 +50,128 @@ func ListeningRecords(c *gin.Context) {
 		"total":   total,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+// @Summary 获取听力做题记录详情
+// @Description 根据id获取听力做题记录详情
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param id query int true "听力做题记录id"
+// @Success 200 {object} models.ResponseData{data=models.ListeningRecordsItem}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/listening/detail/{id} [get]
+func ListeningRecordDetail(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid listening set ID")
+		return
+	}
+
+	record, err := database.GetDataById("listening_records", id)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 返回查询结果
+	response := map[string]interface{}{
+		"data": record,
+	}
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
+}
+
+// @Summary 新增听力做题记录
+// @Description 新增听力做题记录
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param part body models.ListeningRecordsItem true "听力做题记录内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/listening/add [post]
+func AddListeningRecord(c *gin.Context) {
+	var part models.ListeningRecordsItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		fmt.Println(err)
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("listening_records", &part, "create")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to insert listening records")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 更新听力做题记录
+// @Description 更新听力做题记录
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param part body models.ListeningRecordsItem true "听力做题记录内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/listening/update [put]
+func UpdateListeningRecord(c *gin.Context) {
+	var part models.ListeningRecordsItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 将数据插入数据库
+	result, err := database.InsertData("listening_records", &part, "update")
+	fmt.Println(err, "err")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update listening records")
+		return
+	}
+
+	// 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+}
+
+// @Summary 删除听力做题记录
+// @Description 根据ID删除听力做题记录
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param id path int true "听力做题记录ID"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 404 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/listening/delete/{id} [delete]
+func DeleteListeningRecord(c *gin.Context) {
+	idStr := c.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid listening record ID")
+		return
+	}
+
+	// 执行删除操作
+	rowsAffected, err := database.DeleteData("listening_records", id)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to delete listening record")
+		return
+	}
+
+	// 检查是否有记录被删除
+	if rowsAffected == 0 {
+		utils.HandleResponse(c, http.StatusNotFound, "", "Listening record not found")
+		return
+	}
+
+	// 返回成功响应
+	utils.HandleResponse(c, http.StatusOK, nil, "Success")
 }

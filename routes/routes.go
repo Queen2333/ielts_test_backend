@@ -31,6 +31,7 @@ func SetupRouter() *gin.Engine {
 	// r.POST("/register", controllers.RegisterUser)
 	r.GET("/user-info", controllers.GetUserInfo)
 
+	/**配置**/
 	// 听力
 	r.GET("/config/listening/list", controllers.ListeningList)
 	r.GET("/config/listening/detail/:id", controllers.ListeningDetail)
@@ -79,11 +80,34 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/config/testing/update", controllers.UpdateTesting)
 	r.DELETE("/config/testing/delete/:id", controllers.DeleteTesting)
 
-	// 做题记录
+	/**做题记录**/
+	// 听力
 	r.GET("/record/listening/list", controllers.ListeningRecords)
+	r.GET("/record/listening/detail/:id", controllers.ListeningRecordDetail)
+	r.POST("/record/listening/add", controllers.AddListeningRecord)
+	r.PUT("/record/listening/update", controllers.UpdateListeningRecord)
+	r.DELETE("/record/listening/delete/:id", controllers.DeleteListeningRecord)
+
+	// 阅读
 	r.GET("/record/reading/list", controllers.ReadingRecords)
+	r.GET("/record/reading/detail/:id", controllers.ReadingRecordDetail)
+	r.POST("/record/reading/add", controllers.AddReadingRecord)
+	r.PUT("/record/reading/update", controllers.UpdateReadingRecord)
+	r.DELETE("/record/reading/delete/:id", controllers.DeleteReadingRecord)
+
+	// 写作
 	r.GET("/record/writing/list", controllers.WritingRecords)
+	r.GET("/record/writing/detail/:id", controllers.WritingRecordDetail)
+	r.POST("/record/writing/add", controllers.AddWritingRecord)
+	r.PUT("/record/writing/update", controllers.UpdateWritingRecord)
+	r.DELETE("/record/writing/delete/:id", controllers.DeleteWritingRecord)
+
+	// 套题
 	r.GET("/record/testing/list", controllers.TestingRecords)
+	r.GET("/record/testing/detail/:id", controllers.TestingRecordDetail)
+	r.POST("/record/testing/add", controllers.AddTestingRecord)
+	r.PUT("/record/testing/update", controllers.UpdateTestingRecord)
+	r.DELETE("/record/testing/delete/:id", controllers.DeleteTestingRecord)
 
 	// 使用 Swagger UI 中间件
 	return r

@@ -58,11 +58,12 @@ type QuestionOptionsItem struct {
 }
 
 type ReadingRecordsItem struct {
-	ID 					int					`json:"id"`
+	ID 					int					`json:"id,omitempty"`
 	Name				string				`json:"name"`
 	Status				string				`json:"status"`
 	Type				string				`json:"type"`
 	Score				int					`json:"score,omitempty"`
-	Answers				[]string			`json:"answers"`
-	UserID				string				`json:"user_id"`
+	Answers				[]interface{}		`json:"answers"`
+	UserID				string				`json:"user_id,omitempty"`
+	RestSeconds			int					`json:"rest_seconds,omitempty"`
 }

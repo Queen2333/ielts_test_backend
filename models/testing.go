@@ -20,11 +20,17 @@ type BasicTestingItem struct {
 	WritingIDs			[]int				`json:"writing_ids"`
 }
 type TestingRecordsItem struct {
-	ID 					int					`json:"id"`
+	ID 					int					`json:"id,omitempty"`
 	Name				string				`json:"name"`
 	Status				string				`json:"status"`
 	Type				string				`json:"type"`
-	Score				int					`json:"score,omitempty"`
-	Answers				[]string			`json:"answers"`
-	UserID				string				`json:"user_id"`
+	Score				[]int				`json:"score,omitempty"`
+	Answers				[]TestingAnswerItem	`json:"answers"`
+	UserID				string				`json:"user_id,omitempty"`
+	RestSeconds			[]int				`json:"rest_seconds,omitempty"`
+}
+
+type TestingAnswerItem struct {
+	PartName			string				`json:"part_name"`
+	AnswerList			[]interface{}		`json:"answer_list"`
 }

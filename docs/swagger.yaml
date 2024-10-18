@@ -17,6 +17,8 @@ definitions:
         type: integer
       type:
         type: integer
+      user_id:
+        type: string
     type: object
   models.BasicReadingItem:
     properties:
@@ -132,6 +134,35 @@ definitions:
         type: array
       question:
         type: string
+    type: object
+  models.ListeningRecordsItem:
+    properties:
+      answers:
+        items: {}
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      rest_seconds:
+        type: integer
+      score:
+        type: integer
+      status:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.ListeningRecordsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.ListeningRecordsItem'
+        type: array
+      total:
+        type: integer
     type: object
   models.ListeningTypeItem:
     properties:
@@ -261,6 +292,35 @@ definitions:
       question:
         type: string
     type: object
+  models.ReadingRecordsItem:
+    properties:
+      answers:
+        items: {}
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      rest_seconds:
+        type: integer
+      score:
+        type: integer
+      status:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.ReadingRecordsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.ReadingRecordsItem'
+        type: array
+      total:
+        type: integer
+    type: object
   models.ReadingTypeItem:
     properties:
       article_content:
@@ -288,6 +348,14 @@ definitions:
         type: integer
       data: {}
       message:
+        type: string
+    type: object
+  models.TestingAnswerItem:
+    properties:
+      answer_list:
+        items: {}
+        type: array
+      part_name:
         type: string
     type: object
   models.TestingItem:
@@ -318,6 +386,40 @@ definitions:
       items:
         items:
           $ref: '#/definitions/models.TestingItem'
+        type: array
+      total:
+        type: integer
+    type: object
+  models.TestingRecordsItem:
+    properties:
+      answers:
+        items:
+          $ref: '#/definitions/models.TestingAnswerItem'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      rest_seconds:
+        items:
+          type: integer
+        type: array
+      score:
+        items:
+          type: integer
+        type: array
+      status:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.TestingRecordsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.TestingRecordsItem'
         type: array
       total:
         type: integer
@@ -373,6 +475,33 @@ definitions:
       items:
         items:
           $ref: '#/definitions/models.WritingPartItem'
+        type: array
+      total:
+        type: integer
+    type: object
+  models.WritingRecordsItem:
+    properties:
+      answers:
+        items: {}
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      rest_seconds:
+        type: integer
+      status:
+        type: string
+      type:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.WritingRecordsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/models.WritingRecordsItem'
         type: array
       total:
         type: integer
@@ -2147,6 +2276,995 @@ paths:
           schema:
             $ref: '#/definitions/models.ResponseData'
       summary: 用户登录
+  /record/listening/add:
+    post:
+      consumes:
+      - application/json
+      description: 新增听力做题记录
+      parameters:
+      - description: 听力做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.ListeningRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 新增听力做题记录
+      tags:
+      - Listening
+  /record/listening/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据ID删除听力做题记录
+      parameters:
+      - description: 听力做题记录ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 删除听力做题记录
+      tags:
+      - Listening
+  /record/listening/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据id获取听力做题记录详情
+      parameters:
+      - description: 听力做题记录id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ListeningRecordsItem'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取听力做题记录详情
+      tags:
+      - Listening
+  /record/listening/list:
+    get:
+      consumes:
+      - application/json
+      description: 根据条件获取听力记录列表，并返回分页结果
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      - description: "3"
+        in: query
+        name: type
+        required: true
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNo
+        required: true
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageLimit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ListeningRecordsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取听力做题记录列表
+      tags:
+      - Listening
+  /record/listening/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新听力做题记录
+      parameters:
+      - description: 听力做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.ListeningRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 更新听力做题记录
+      tags:
+      - Listening
+  /record/reading/add:
+    post:
+      consumes:
+      - application/json
+      description: 新增阅读做题记录
+      parameters:
+      - description: 阅读做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReadingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 新增阅读做题记录
+      tags:
+      - Reading
+  /record/reading/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据ID删除阅读做题记录
+      parameters:
+      - description: 阅读做题记录ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 删除阅读做题记录
+      tags:
+      - Reading
+  /record/reading/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据id获取阅读做题记录详情
+      parameters:
+      - description: 阅读做题记录id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ReadingRecordsItem'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取阅读做题记录详情
+      tags:
+      - Reading
+  /record/reading/list:
+    get:
+      consumes:
+      - application/json
+      description: 根据条件获取阅读记录列表，并返回分页结果
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      - description: 试题类型
+        in: query
+        name: type
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNo
+        required: true
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageLimit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ReadingRecordsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取阅读做题记录列表
+      tags:
+      - Reading
+  /record/reading/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新阅读做题记录
+      parameters:
+      - description: 阅读做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReadingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 更新阅读做题记录
+      tags:
+      - Reading
+  /record/testing/add:
+    post:
+      consumes:
+      - application/json
+      description: 新增测试做题记录
+      parameters:
+      - description: 测试做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.TestingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 新增测试做题记录
+      tags:
+      - Testing
+  /record/testing/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据ID删除测试做题记录
+      parameters:
+      - description: 测试做题记录ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 删除测试做题记录
+      tags:
+      - Testing
+  /record/testing/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据id获取测试做题记录详情
+      parameters:
+      - description: 测试做题记录id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TestingRecordsItem'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取测试做题记录详情
+      tags:
+      - Testing
+  /record/testing/list:
+    get:
+      consumes:
+      - application/json
+      description: 根据条件获取测试记录列表，并返回分页结果
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      - description: 试题类型
+        in: query
+        name: type
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNo
+        required: true
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageLimit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.TestingRecordsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取测试做题记录列表
+      tags:
+      - Testing
+  /record/testing/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新测试做题记录
+      parameters:
+      - description: 测试做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.TestingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 更新测试做题记录
+      tags:
+      - Testing
+  /record/writing/add:
+    post:
+      consumes:
+      - application/json
+      description: 新增写作做题记录
+      parameters:
+      - description: 写作做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.WritingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 新增写作做题记录
+      tags:
+      - Writing
+  /record/writing/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: 根据ID删除写作做题记录
+      parameters:
+      - description: 写作做题记录ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 删除写作做题记录
+      tags:
+      - Writing
+  /record/writing/detail/{id}:
+    get:
+      consumes:
+      - application/json
+      description: 根据id获取写作做题记录详情
+      parameters:
+      - description: 写作做题记录id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.WritingRecordsItem'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取写作做题记录详情
+      tags:
+      - Writing
+  /record/writing/list:
+    get:
+      consumes:
+      - application/json
+      description: 根据条件获取写作记录列表，并返回分页结果
+      parameters:
+      - description: 名称
+        in: query
+        name: name
+        type: string
+      - description: 状态
+        in: query
+        name: status
+        type: integer
+      - description: 试题类型
+        in: query
+        name: type
+        type: integer
+      - description: 页码
+        in: query
+        name: pageNo
+        required: true
+        type: integer
+      - description: 每页条数
+        in: query
+        name: pageLimit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.WritingRecordsResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 获取写作做题记录列表
+      tags:
+      - Writing
+  /record/writing/update:
+    put:
+      consumes:
+      - application/json
+      description: 更新写作做题记录
+      parameters:
+      - description: 写作做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.WritingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 更新写作做题记录
+      tags:
+      - Writing
   /send-code:
     post:
       consumes:

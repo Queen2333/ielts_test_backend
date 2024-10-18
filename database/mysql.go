@@ -290,6 +290,7 @@ func InsertData(tableName string, data interface{}, handleType string) (int, err
 
     // Execute the query
     _, err := db.Exec(query, values...)
+	// fmt.Println("Query:", query, values, err)
     if err != nil {
         return 0, fmt.Errorf("failed to execute query: %v, values: %v, error: %w", query, values, err)
     }
