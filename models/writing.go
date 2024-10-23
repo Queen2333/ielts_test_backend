@@ -14,6 +14,7 @@ type BasicWritingItem struct {
 	Status    			int    				`json:"status"`
 	Type      			int    				`json:"type"`
 	PartList			[]int				`json:"part_list"`
+	UserID				string				`json:"user_id,omitempty"`
 }
 
 type WritingPartItem struct {

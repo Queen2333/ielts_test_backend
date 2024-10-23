@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
@@ -45,45 +44,15 @@ func ListeningList(c *gin.Context) {
         return
     }
 
-	// 遍历 results 提取所有的 part_list ID
-	for i, result := range results {
-
-		// 处理 []interface{} 类型的 part_list
-		partListInterface, ok := result["part_list"].([]interface{})
-		if !ok {
-			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to parse part_list")
-			return
-		}
-
-		// 转换为字符串数组
-		var partListStrArray []string
-		for _, part := range partListInterface {
-			partListStrArray = append(partListStrArray, fmt.Sprint(part))
-		}
-
-		var partListStr = strings.Join(partListStrArray, ",")
-
-		partList := utils.StringToList(partListStr)
-		// 查询 part_list 中的详细信息
-		var details []map[string]interface{}
-		for _, id := range partList {
-			partDetail, err := database.GetPartsByIds("listening_part_list", []int{id})
-			if err != nil {
-				utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to query listening parts")
-				return
-			}
-			if len(partDetail) > 0 {
-				details = append(details, partDetail[0])
-			}
-		}
-		// 将查询结果放回到对应的 part_list 中
-		results[i]["part_list"] = details
-		// }
+	result, err := utils.ProcessPartList(c, results)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", err.Error())
+		return
 	}
 
 	// 返回查询结果
 	response := map[string]interface{}{
-		"items": results,
+		"items": result,
 		"total":   total,
 	}
 	utils.HandleResponse(c, http.StatusOK, response, "Success")
@@ -177,6 +146,18 @@ func UpdateListening(c *gin.Context) {
 		fmt.Println(err)
 		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
 		return
+	}
+
+	if part.Type == 3 {
+		userID, err := utils.GetUserIDFromToken(c)
+		if err != nil {
+			// 处理获取 user_id 失败的情况
+			utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+			return
+		}
+
+		// 将 user_id 添加到 part 中
+		part.UserID = userID
 	}
 
 	// 将数据插入数据库

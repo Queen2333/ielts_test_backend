@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/gin-gonic/gin"
 )
@@ -140,4 +141,100 @@ func GetUserIDFromToken(c *gin.Context) (string, error) {
 
 	// 返回 user_id
 	return userInfo.ID, nil
+}
+
+func ProcessPartList(c *gin.Context, results []map[string]interface{}) ([]map[string]interface{}, error) {
+	for i, result := range results {
+		// 处理 []interface{} 类型的 part_list
+		partListInterface, ok := result["part_list"].([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("failed to parse part_list")
+		}
+
+		// 调用 GetPartDetails 获取详细信息
+		details, err := GetPartDetails(partListInterface)
+		if err != nil {
+			return nil, err
+		}
+
+		// 将查询结果放回到对应的 part_list 中
+		results[i]["part_list"] = details
+	}
+	return results, nil
+}
+
+func GetPartDetails(partListInterface []interface{}) ([]map[string]interface{}, error) {
+	// 转换为字符串数组
+	var partListStrArray []string
+	for _, part := range partListInterface {
+		partListStrArray = append(partListStrArray, fmt.Sprint(part))
+	}
+
+	partListStr := strings.Join(partListStrArray, ",")
+	partList := StringToList(partListStr)
+
+	// 查询 part_list 中的详细信息
+	var details []map[string]interface{}
+	for _, id := range partList {
+		partDetail, err := database.GetPartsByIds("listening_part_list", []int{id})
+		if err != nil {
+			return nil, fmt.Errorf("failed to query listening parts: %w", err)
+		}
+		if len(partDetail) > 0 {
+			details = append(details, partDetail[0])
+		}
+	}
+
+	return details, nil
+}
+
+type Answer struct {
+	No     string      `json:"no"`
+	Answer interface{} `json:"answer"`
+}
+
+func CalculateScore(partList []map[string]interface{}, submittedAnswers []Answer) int {
+	score := 0
+
+	// 创建一个映射用于快速查找答案
+	answerMap := make(map[string]interface{})
+	for _, ans := range submittedAnswers {
+		answerMap[ans.No] = ans.Answer
+	}
+
+	for _, part := range partList {
+		for _, typeItem := range part["type_list"].([]interface{}) {
+			questions := typeItem.(map[string]interface{})["question_list"].([]interface{})
+			for _, question := range questions {
+				q := question.(map[string]interface{})
+				questionNo := q["no"].(string)
+
+				if answer, exists := answerMap[questionNo]; exists {
+					correctAnswer := q["answer"]
+					if correctAnswer != nil {
+						// 判断答案类型
+						switch correctAnswer.(type) {
+						case []interface{}: // 多选
+							if userAnswers, ok := answer.([]interface{}); ok {
+								for _, correct := range correctAnswer.([]interface{}) {
+									for _, userAnswer := range userAnswers {
+										if correct == userAnswer {
+											score++
+											break
+										}
+									}
+								}
+							}
+						default: // 单选
+							if answer == correctAnswer {
+								score++
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return score
 }

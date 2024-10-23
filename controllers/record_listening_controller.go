@@ -100,8 +100,20 @@ func AddListeningRecord(c *gin.Context) {
 		return
 	}
 
+	part.Status = "0"
+	part.Type = "3"
+
+	userID, err := utils.GetUserIDFromToken(c)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+		return
+	}
+	// 将 user_id 添加到 part 中
+	part.UserID = userID
+
 	// 将数据插入数据库
 	result, err := database.InsertData("listening_records", &part, "create")
+	fmt.Println(err, "err")
 	if err != nil {
 		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to insert listening records")
 		return
@@ -127,6 +139,16 @@ func UpdateListeningRecord(c *gin.Context) {
 		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
 		return
 	}
+
+	part.Status = "0"
+	part.Type = "3"
+	userID, err := utils.GetUserIDFromToken(c)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+		return
+	}
+	// 将 user_id 添加到 part 中
+	part.UserID = userID
 
 	// 将数据插入数据库
 	result, err := database.InsertData("listening_records", &part, "update")
@@ -174,4 +196,63 @@ func DeleteListeningRecord(c *gin.Context) {
 
 	// 返回成功响应
 	utils.HandleResponse(c, http.StatusOK, nil, "Success")
+}
+
+// @Summary 提交听力做题记录
+// @Description 提交听力做题记录
+// @Tags Listening
+// @Accept json
+// @Produce json
+// @Param part body models.ListeningRecordsItem true "听力做题记录内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/listening/submit [post]
+func SubmitListeningRecord(c *gin.Context) {
+	var part models.ListeningRecordsItem
+	if err := c.ShouldBindJSON(&part); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	test, err := database.GetDataById("listening_list", part.TestID)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+	partListInterface, ok := test["part_list"].([]interface{})
+	if !ok {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to parse part_list")
+		return
+	}
+
+	// 调用 GetPartDetails 获取详细信息
+	details, err := utils.GetPartDetails(partListInterface)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to get part detail")
+		return
+	}
+
+	fmt.Println(details, "details")
+	name, nameOk := test["name"].(string)
+	if !nameOk {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to parse name")
+		return
+	}
+	response := map[string]interface{}{
+		"part_list": details,
+		"id": part.TestID,
+		"name": name,
+	}
+
+	// // 将数据插入数据库
+	// result, err := database.InsertData("listening_records", &part, "update")
+	// fmt.Println(err, "err")
+	// if err != nil {
+	// 	utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update listening records")
+	// 	return
+	// }
+
+	// // 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, response, "Success")
 }

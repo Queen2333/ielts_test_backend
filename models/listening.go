@@ -58,12 +58,18 @@ type PicturesItem struct {
 }
 
 type ListeningRecordsItem struct {
-	ID 					int					`json:"id,omitempty"`
-	Name				string				`json:"name"`
-	Status				string				`json:"status"`
-	Type				string				`json:"type"`
-	Score				int					`json:"score,omitempty"`
-	Answers				[]interface{}		`json:"answers"`
-	UserID				string				`json:"user_id,omitempty"`
-	RestSeconds			int					`json:"rest_seconds,omitempty"`
+	ID 					int							`json:"id,omitempty"`
+	Name				string						`json:"name,omitempty"`
+	Status				string						`json:"status,omitempty"`
+	Type				string						`json:"type,omitempty"`
+	Score				int							`json:"score,omitempty"`
+	Answers				[]ListeningAnswerItem		`json:"answers"`
+	UserID				string						`json:"user_id,omitempty"`
+	RestSeconds			int							`json:"rest_seconds,omitempty"`
+	TestID 				int							`json:"test_id"`
+}
+
+type ListeningAnswerItem struct {
+	No					string				`json:"no"`
+	Answer				interface{}			`json:"answer"`
 }

@@ -137,6 +137,18 @@ func AddReading(c *gin.Context) {
 		return
 	}
 
+	if part.Type == 3 {
+		userID, err := utils.GetUserIDFromToken(c)
+		if err != nil {
+			// 处理获取 user_id 失败的情况
+			utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+			return
+		}
+
+		// 将 user_id 添加到 part 中
+		part.UserID = userID
+	}
+
 	// 将数据插入数据库
 	result, err := database.InsertData("reading_list", &part, "create")
 	if err != nil {
@@ -166,6 +178,17 @@ func UpdateReading(c *gin.Context) {
 		return
 	}
 
+	if part.Type == 3 {
+		userID, err := utils.GetUserIDFromToken(c)
+		if err != nil {
+			// 处理获取 user_id 失败的情况
+			utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+			return
+		}
+
+		// 将 user_id 添加到 part 中
+		part.UserID = userID
+	}
 	// 将数据插入数据库
 	result, err := database.InsertData("reading_list", &part, "update")
 	if err != nil {

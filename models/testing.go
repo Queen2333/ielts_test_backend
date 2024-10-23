@@ -18,6 +18,7 @@ type BasicTestingItem struct {
 	ListeningIDs		[]int				`json:"listening_ids"`
 	ReadingIDs			[]int				`json:"reading_ids"`
 	WritingIDs			[]int				`json:"writing_ids"`
+	UserID				string				`json:"user_id,omitempty"`
 }
 type TestingRecordsItem struct {
 	ID 					int					`json:"id,omitempty"`
