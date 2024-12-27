@@ -16,6 +16,7 @@ func GetClientIP(c *gin.Context) string {
 	return c.ClientIP()
 }
 
+
 func main() {
 
 	// 创建Gin实例
@@ -28,6 +29,7 @@ func main() {
 	//		"ip":      GetClientIP(c),
 	//	})
 	//})
+
 
 	str := utils.GenerateRandomString(32)
 

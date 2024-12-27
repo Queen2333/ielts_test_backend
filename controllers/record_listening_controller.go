@@ -8,6 +8,7 @@ import (
 	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/Queen2333/ielts_test_backend/utils"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 )
 
@@ -209,50 +210,66 @@ func DeleteListeningRecord(c *gin.Context) {
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /record/listening/submit [post]
 func SubmitListeningRecord(c *gin.Context) {
+	// 获取提交的听力做题记录
 	var part models.ListeningRecordsItem
+
+	spew.Dump(part, "part")
 	if err := c.ShouldBindJSON(&part); err != nil {
 		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
 		return
 	}
 
+	// 根据test_id获取听力列表
 	test, err := database.GetDataById("listening_list", part.TestID)
     if err != nil {
         utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
         return
     }
+	// 获取part_list
 	partListInterface, ok := test["part_list"].([]interface{})
 	if !ok {
 		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to parse part_list")
 		return
 	}
 
-	// 调用 GetPartDetails 获取详细信息
+	// 调用 GetPartDetails 获取part详细信息
 	details, err := utils.GetPartDetails(partListInterface)
 	if err != nil {
 		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to get part detail")
 		return
 	}
 
-	fmt.Println(details, "details")
-	name, nameOk := test["name"].(string)
-	if !nameOk {
-		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to parse name")
+	// 继续使用 parsedDetails 进行评分计算
+	score := utils.CalculateScore(details, part.Answers)
+
+	part.Status = "0"
+	part.Type = "3"
+	part.Score = int(score)
+	userID, err := utils.GetUserIDFromToken(c)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
 		return
 	}
-	response := map[string]interface{}{
-		"part_list": details,
-		"id": part.TestID,
-		"name": name,
+	// 将 user_id 添加到 part 中
+	part.UserID = userID
+
+	// 将数据插入数据库
+	result, err := database.InsertData("listening_records", &part, "update")
+	fmt.Println(err, "err")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update listening records")
+		return
 	}
 
-	// // 将数据插入数据库
-	// result, err := database.InsertData("listening_records", &part, "update")
-	// fmt.Println(err, "err")
-	// if err != nil {
-	// 	utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update listening records")
-	// 	return
+	// response := map[string]interface{}{
+	// 	// "part_list": details,
+	// 	"id": part.ID, // 听力做题记录id
+	// 	"test_id": part.TestID, // 听力试题id
+	// 	"name": name, // 听力名称
+	// 	"score": score, // 得分
 	// }
 
 	// // 返回插入后的数据
-	utils.HandleResponse(c, http.StatusOK, response, "Success")
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+	// utils.HandleResponse(c, http.StatusOK, response, "Success")
 }

@@ -13,6 +13,7 @@ import (
 
 	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 )
 
@@ -193,48 +194,132 @@ type Answer struct {
 	Answer interface{} `json:"answer"`
 }
 
-func CalculateScore(partList []map[string]interface{}, submittedAnswers []Answer) int {
+func CalculateScore(partList []map[string]interface{}, submittedAnswers []models.ListeningAnswerItem) float64 {
 	score := 0
-
-	// 创建一个映射用于快速查找答案
+	// 创建一个映射用于快速查找用户答案
 	answerMap := make(map[string]interface{})
 	for _, ans := range submittedAnswers {
 		answerMap[ans.No] = ans.Answer
 	}
 
 	for _, part := range partList {
-		for _, typeItem := range part["type_list"].([]interface{}) {
-			questions := typeItem.(map[string]interface{})["question_list"].([]interface{})
-			for _, question := range questions {
-				q := question.(map[string]interface{})
-				questionNo := q["no"].(string)
+		// spew.Dump(part)
+		typeList, ok := part["type_list"].([]interface{})
+		if !ok {
+			fmt.Printf("Skipping part due to type_list not being a valid type: %v (type: %T)\n", part["type_list"], part["type_list"])
+			continue
+		}
 
-				if answer, exists := answerMap[questionNo]; exists {
-					correctAnswer := q["answer"]
-					if correctAnswer != nil {
-						// 判断答案类型
-						switch correctAnswer.(type) {
-						case []interface{}: // 多选
-							if userAnswers, ok := answer.([]interface{}); ok {
-								for _, correct := range correctAnswer.([]interface{}) {
-									for _, userAnswer := range userAnswers {
-										if correct == userAnswer {
-											score++
-											break
-										}
-									}
-								}
-							}
-						default: // 单选
-							if answer == correctAnswer {
-								score++
-							}
-						}
-					}
+		for _, typeItemInterface := range typeList {
+			typeItem, ok := typeItemInterface.(map[string]interface{}) // Type assertion
+			if !ok {
+				fmt.Println("Skipping typeItem due to invalid type:", typeItemInterface)
+				continue
+			}
+			questionType, _ := typeItem["type"].(string)
+			questionListInterface, ok := typeItem["question_list"].([]interface{})
+			if !ok {
+				spew.Dump(questionListInterface, "questionList skip")
+				continue
+			}
+			for _, questionInterface := range questionListInterface {
+				question, ok := questionInterface.(map[string]interface{})
+				if !ok {
+					fmt.Println("Skipping question due to invalid type:", questionInterface)
+					continue
+				}
+				questionNo, ok := question["no"].(string)
+				if !ok {
+					fmt.Println("Skipping question due to 'no' not being a string:", question)
+					continue
+				}
+				correctAnswer := question["answer"]
+
+				// 检查用户是否提交了该题答案
+				if answer, exists := answerMap[questionNo]; exists && correctAnswer != nil {
+					score += calculateScoreByType(questionType, correctAnswer, answer)
+					// fmt.Printf("Question No: %s, User Answer: %v, Correct Answer: %v, Points: %d\n", questionNo, answer, correctAnswer, score)
 				}
 			}
 		}
 	}
+	spew.Dump(score, "total score")
+	// 定义分数映射
+	totalScore := score
+	// 根据 score 的值返回对应的分数
+	switch {
+	case totalScore >= 39:
+		return 9.0
+	case totalScore >= 37:
+		return 8.5
+	case totalScore >= 35:
+		return 8.0
+	case totalScore >= 33:
+		return 7.5
+	case totalScore >= 30:
+		return 7.0
+	case totalScore >= 27:
+		return 6.5
+	case totalScore >= 23:
+		return 6.0
+	case totalScore >= 20:
+		return 5.5
+	case totalScore >= 16:
+		return 5.0
+	case totalScore >= 13:
+		return 4.5
+	case totalScore >= 10:
+		return 4.0
+	case totalScore >= 6:
+		return 3.5
+	case totalScore >= 4:
+		return 3.0
+	case totalScore == 3:
+		return 2.5
+	case totalScore == 2:
+		return 2.0
+	case totalScore == 1:
+		return 1.0
+	default:
+		return 0
+	}
+}
 
+// 根据题型计算得分
+func calculateScoreByType(questionType string, correctAnswer, userAnswer interface{}) int {
+
+	switch questionType {
+	case "multi_choice":
+		// 多选题处理
+		if correctAns, ok := correctAnswer.([]interface{}); ok {
+			if userAns, ok := userAnswer.([]interface{}); ok {
+				return calculateMultiChoiceScore(correctAns, userAns)
+			}
+		}
+	default:
+		// 其他题型（单选、填空、匹配、地图等）
+		if correctAnswer == userAnswer {
+			return 1
+		}
+	}
+	return 0
+}
+
+// 计算多选题得分
+func calculateMultiChoiceScore(correctAnswers, userAnswers []interface{}) int {
+	score := 0
+	correctSet := make(map[interface{}]bool)
+
+	// 将正确答案放入集合
+	for _, correct := range correctAnswers {
+		correctSet[correct] = true
+	}
+
+	// 检查用户答案是否在正确答案集合中
+	for _, userAnswer := range userAnswers {
+		if correctSet[userAnswer] {
+			score++
+		}
+	}
 	return score
 }
