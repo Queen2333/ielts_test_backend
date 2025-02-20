@@ -95,6 +95,7 @@ func SetupRouter() *gin.Engine {
 	r.POST("/record/reading/add", controllers.AddReadingRecord)
 	r.PUT("/record/reading/update", controllers.UpdateReadingRecord)
 	r.DELETE("/record/reading/delete/:id", controllers.DeleteReadingRecord)
+	r.POST("/record/reading/submit", controllers.SubmitReadingRecord)
 
 	// 写作
 	r.GET("/record/writing/list", controllers.WritingRecords)

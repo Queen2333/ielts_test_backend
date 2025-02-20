@@ -63,13 +63,13 @@ type ListeningRecordsItem struct {
 	Status				string						`json:"status,omitempty"`
 	Type				string						`json:"type,omitempty"`
 	Score				int							`json:"score,omitempty"`
-	Answers				[]ListeningAnswerItem		`json:"answers"`
+	Answers				[]AnswerItem				`json:"answers"`
 	UserID				string						`json:"user_id,omitempty"`
 	RestSeconds			int							`json:"rest_seconds,omitempty"`
 	TestID 				int							`json:"test_id"`
 }
 
-type ListeningAnswerItem struct {
+type AnswerItem struct {
 	No					string				`json:"no"`
 	Answer				interface{}			`json:"answer"`
 }

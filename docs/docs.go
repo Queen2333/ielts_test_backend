@@ -3560,6 +3560,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/record/listening/submit": {
+            "post": {
+                "description": "提交听力做题记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Listening"
+                ],
+                "summary": "提交听力做题记录",
+                "parameters": [
+                    {
+                        "description": "听力做题记录内容",
+                        "name": "part",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ListeningRecordsItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/record/listening/update": {
             "put": {
                 "description": "更新听力做题记录",
@@ -5195,6 +5277,9 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
@@ -5225,6 +5310,9 @@ const docTemplate = `{
                 "type": {
                     "type": "integer"
                 },
+                "user_id": {
+                    "type": "string"
+                },
                 "writing_ids": {
                     "type": "array",
                     "items": {
@@ -5253,6 +5341,18 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "integer"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ListeningAnswerItem": {
+            "type": "object",
+            "properties": {
+                "answer": {},
+                "no": {
+                    "type": "string"
                 }
             }
         },
@@ -5356,7 +5456,9 @@ const docTemplate = `{
             "properties": {
                 "answers": {
                     "type": "array",
-                    "items": {}
+                    "items": {
+                        "$ref": "#/definitions/models.ListeningAnswerItem"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -5372,6 +5474,9 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                },
+                "test_id": {
+                    "type": "integer"
                 },
                 "type": {
                     "type": "string"

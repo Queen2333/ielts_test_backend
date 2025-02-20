@@ -64,7 +64,8 @@ type ReadingRecordsItem struct {
 	Status				string				`json:"status"`
 	Type				string				`json:"type"`
 	Score				int					`json:"score,omitempty"`
-	Answers				[]interface{}		`json:"answers"`
+	Answers				[]AnswerItem		`json:"answers"`
 	UserID				string				`json:"user_id,omitempty"`
 	RestSeconds			int					`json:"rest_seconds,omitempty"`
+	TestID 				int					`json:"test_id"`
 }

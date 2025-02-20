@@ -144,7 +144,7 @@ func GetUserIDFromToken(c *gin.Context) (string, error) {
 	return userInfo.ID, nil
 }
 
-func ProcessPartList(c *gin.Context, results []map[string]interface{}) ([]map[string]interface{}, error) {
+func ProcessPartList(c *gin.Context, results []map[string]interface{}, name string) ([]map[string]interface{}, error) {
 	for i, result := range results {
 		// 处理 []interface{} 类型的 part_list
 		partListInterface, ok := result["part_list"].([]interface{})
@@ -153,7 +153,7 @@ func ProcessPartList(c *gin.Context, results []map[string]interface{}) ([]map[st
 		}
 
 		// 调用 GetPartDetails 获取详细信息
-		details, err := GetPartDetails(partListInterface)
+		details, err := GetPartDetails(partListInterface, name)
 		if err != nil {
 			return nil, err
 		}
@@ -164,7 +164,7 @@ func ProcessPartList(c *gin.Context, results []map[string]interface{}) ([]map[st
 	return results, nil
 }
 
-func GetPartDetails(partListInterface []interface{}) ([]map[string]interface{}, error) {
+func GetPartDetails(partListInterface []interface{}, name string) ([]map[string]interface{}, error) {
 	// 转换为字符串数组
 	var partListStrArray []string
 	for _, part := range partListInterface {
@@ -177,7 +177,7 @@ func GetPartDetails(partListInterface []interface{}) ([]map[string]interface{}, 
 	// 查询 part_list 中的详细信息
 	var details []map[string]interface{}
 	for _, id := range partList {
-		partDetail, err := database.GetPartsByIds("listening_part_list", []int{id})
+		partDetail, err := database.GetPartsByIds(name, []int{id})
 		if err != nil {
 			return nil, fmt.Errorf("failed to query listening parts: %w", err)
 		}
@@ -194,16 +194,16 @@ type Answer struct {
 	Answer interface{} `json:"answer"`
 }
 
-func CalculateScore(partList []map[string]interface{}, submittedAnswers []models.ListeningAnswerItem) float64 {
+func CalculateScore(partList []map[string]interface{}, submittedAnswers []models.AnswerItem) float64 {
 	score := 0
 	// 创建一个映射用于快速查找用户答案
 	answerMap := make(map[string]interface{})
 	for _, ans := range submittedAnswers {
 		answerMap[ans.No] = ans.Answer
 	}
-
+	// spew.Dump(answerMap, partList, "answerMap")
 	for _, part := range partList {
-		// spew.Dump(part)
+		// spew.Dump(part, "part2")
 		typeList, ok := part["type_list"].([]interface{})
 		if !ok {
 			fmt.Printf("Skipping part due to type_list not being a valid type: %v (type: %T)\n", part["type_list"], part["type_list"])
@@ -287,7 +287,7 @@ func CalculateScore(partList []map[string]interface{}, submittedAnswers []models
 
 // 根据题型计算得分
 func calculateScoreByType(questionType string, correctAnswer, userAnswer interface{}) int {
-
+	spew.Dump(questionType, correctAnswer, userAnswer, "questionType, correctAnswer, userAnswer")
 	switch questionType {
 	case "multi_choice":
 		// 多选题处理

@@ -233,7 +233,7 @@ func SubmitListeningRecord(c *gin.Context) {
 	}
 
 	// 调用 GetPartDetails 获取part详细信息
-	details, err := utils.GetPartDetails(partListInterface)
+	details, err := utils.GetPartDetails(partListInterface, "listening_part_list")
 	if err != nil {
 		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to get part detail")
 		return
@@ -261,15 +261,6 @@ func SubmitListeningRecord(c *gin.Context) {
 		return
 	}
 
-	// response := map[string]interface{}{
-	// 	// "part_list": details,
-	// 	"id": part.ID, // 听力做题记录id
-	// 	"test_id": part.TestID, // 听力试题id
-	// 	"name": name, // 听力名称
-	// 	"score": score, // 得分
-	// }
-
 	// // 返回插入后的数据
 	utils.HandleResponse(c, http.StatusOK, result, "Success")
-	// utils.HandleResponse(c, http.StatusOK, response, "Success")
 }

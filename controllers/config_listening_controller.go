@@ -44,7 +44,7 @@ func ListeningList(c *gin.Context) {
         return
     }
 
-	result, err := utils.ProcessPartList(c, results)
+	result, err := utils.ProcessPartList(c, results, "listening_part_list")
 	if err != nil {
 		utils.HandleResponse(c, http.StatusInternalServerError, "", err.Error())
 		return

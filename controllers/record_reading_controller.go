@@ -8,6 +8,7 @@ import (
 	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/Queen2333/ielts_test_backend/utils"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 )
 
@@ -175,4 +176,71 @@ func DeleteReadingRecord(c *gin.Context) {
 
 	// 返回成功响应
 	utils.HandleResponse(c, http.StatusOK, nil, "Success")
+}
+
+// @Summary 提交听力做题记录
+// @Description 提交听力做题记录
+// @Tags Reading
+// @Accept json
+// @Produce json
+// @Param part body models.ReadingRecordsItem true "听力做题记录内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/reading/submit [post]
+func SubmitReadingRecord(c *gin.Context) {
+	// 获取提交的听力做题记录
+	var part models.ReadingRecordsItem
+
+	spew.Dump(part, "part")
+	if err := c.ShouldBindJSON(&part); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 根据test_id获取听力列表
+	test, err := database.GetDataById("reading_list", part.TestID)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+	// 获取part_list
+	partListInterface, ok := test["part_list"].([]interface{})
+	if !ok {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to parse part_list")
+		return
+	}
+
+	// 调用 GetPartDetails 获取part详细信息
+	details, err := utils.GetPartDetails(partListInterface, "reading_part_list")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to get part detail")
+		return
+	}
+	spew.Dump(partListInterface, "partListInterface")
+
+	// 继续使用 parsedDetails 进行评分计算
+	score := utils.CalculateScore(details, part.Answers)
+
+	part.Status = "0"
+	part.Type = "3"
+	part.Score = int(score)
+	userID, err := utils.GetUserIDFromToken(c)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+		return
+	}
+	// 将 user_id 添加到 part 中
+	part.UserID = userID
+
+	// 将数据插入数据库
+	result, err := database.InsertData("reading_records", &part, "update")
+	fmt.Println(err, "err")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update reading records")
+		return
+	}
+
+	// // 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
 }
