@@ -4088,6 +4088,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/record/reading/submit": {
+            "post": {
+                "description": "提交阅读做题记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Reading"
+                ],
+                "summary": "提交阅读做题记录",
+                "parameters": [
+                    {
+                        "description": "阅读做题记录内容",
+                        "name": "part",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.ReadingRecordsItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/record/reading/update": {
             "put": {
                 "description": "更新阅读做题记录",
@@ -4489,6 +4571,88 @@ const docTemplate = `{
                                     "properties": {
                                         "data": {
                                             "$ref": "#/definitions/models.TestingRecordsResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/record/testing/submit": {
+            "post": {
+                "description": "提交套题做题记录",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Testing"
+                ],
+                "summary": "提交套题做题记录",
+                "parameters": [
+                    {
+                        "description": "套题做题记录内容",
+                        "name": "part",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TestingRecordsItem"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object"
                                         }
                                     }
                                 }
@@ -5225,6 +5389,15 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.AnswerItem": {
+            "type": "object",
+            "properties": {
+                "answer": {},
+                "no": {
+                    "type": "string"
+                }
+            }
+        },
         "models.BasicListeningItem": {
             "type": "object",
             "properties": {
@@ -5347,15 +5520,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.ListeningAnswerItem": {
-            "type": "object",
-            "properties": {
-                "answer": {},
-                "no": {
-                    "type": "string"
-                }
-            }
-        },
         "models.ListeningItem": {
             "type": "object",
             "properties": {
@@ -5457,7 +5621,7 @@ const docTemplate = `{
                 "answers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.ListeningAnswerItem"
+                        "$ref": "#/definitions/models.AnswerItem"
                     }
                 },
                 "id": {
@@ -5702,7 +5866,9 @@ const docTemplate = `{
             "properties": {
                 "answers": {
                     "type": "array",
-                    "items": {}
+                    "items": {
+                        "$ref": "#/definitions/models.AnswerItem"
+                    }
                 },
                 "id": {
                     "type": "integer"
@@ -5718,6 +5884,9 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                },
+                "test_id": {
+                    "type": "integer"
                 },
                 "type": {
                     "type": "string"
@@ -5785,18 +5954,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.TestingAnswerItem": {
-            "type": "object",
-            "properties": {
-                "answer_list": {
-                    "type": "array",
-                    "items": {}
-                },
-                "part_name": {
-                    "type": "string"
-                }
-            }
-        },
         "models.TestingItem": {
             "type": "object",
             "properties": {
@@ -5852,7 +6009,7 @@ const docTemplate = `{
                 "answers": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/models.TestingAnswerItem"
+                        "$ref": "#/definitions/models.AnswerItem"
                     }
                 },
                 "id": {
@@ -5875,6 +6032,9 @@ const docTemplate = `{
                 },
                 "status": {
                     "type": "string"
+                },
+                "test_id": {
+                    "type": "integer"
                 },
                 "type": {
                     "type": "string"

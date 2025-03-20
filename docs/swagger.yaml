@@ -1,4 +1,10 @@
 definitions:
+  models.AnswerItem:
+    properties:
+      answer: {}
+      "no":
+        type: string
+    type: object
   models.BasicListeningItem:
     properties:
       audio_files:
@@ -79,12 +85,6 @@ definitions:
       user_id:
         type: string
     type: object
-  models.ListeningAnswerItem:
-    properties:
-      answer: {}
-      "no":
-        type: string
-    type: object
   models.ListeningItem:
     properties:
       audio_files:
@@ -151,7 +151,7 @@ definitions:
     properties:
       answers:
         items:
-          $ref: '#/definitions/models.ListeningAnswerItem'
+          $ref: '#/definitions/models.AnswerItem'
         type: array
       id:
         type: integer
@@ -310,7 +310,8 @@ definitions:
   models.ReadingRecordsItem:
     properties:
       answers:
-        items: {}
+        items:
+          $ref: '#/definitions/models.AnswerItem'
         type: array
       id:
         type: integer
@@ -322,6 +323,8 @@ definitions:
         type: integer
       status:
         type: string
+      test_id:
+        type: integer
       type:
         type: string
       user_id:
@@ -365,14 +368,6 @@ definitions:
       message:
         type: string
     type: object
-  models.TestingAnswerItem:
-    properties:
-      answer_list:
-        items: {}
-        type: array
-      part_name:
-        type: string
-    type: object
   models.TestingItem:
     properties:
       id:
@@ -409,7 +404,7 @@ definitions:
     properties:
       answers:
         items:
-          $ref: '#/definitions/models.TestingAnswerItem'
+          $ref: '#/definitions/models.AnswerItem'
         type: array
       id:
         type: integer
@@ -425,6 +420,8 @@ definitions:
         type: array
       status:
         type: string
+      test_id:
+        type: integer
       type:
         type: string
       user_id:
@@ -2786,6 +2783,51 @@ paths:
       summary: 获取阅读做题记录列表
       tags:
       - Reading
+  /record/reading/submit:
+    post:
+      consumes:
+      - application/json
+      description: 提交阅读做题记录
+      parameters:
+      - description: 阅读做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReadingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 提交阅读做题记录
+      tags:
+      - Reading
   /record/reading/update:
     put:
       consumes:
@@ -3031,6 +3073,51 @@ paths:
                   type: object
               type: object
       summary: 获取测试做题记录列表
+      tags:
+      - Testing
+  /record/testing/submit:
+    post:
+      consumes:
+      - application/json
+      description: 提交套题做题记录
+      parameters:
+      - description: 套题做题记录内容
+        in: body
+        name: part
+        required: true
+        schema:
+          $ref: '#/definitions/models.TestingRecordsItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseData'
+            - properties:
+                data:
+                  type: object
+              type: object
+      summary: 提交套题做题记录
       tags:
       - Testing
   /record/testing/update:
