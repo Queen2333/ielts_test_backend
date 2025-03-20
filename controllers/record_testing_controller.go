@@ -8,6 +8,7 @@ import (
 	"github.com/Queen2333/ielts_test_backend/database"
 	"github.com/Queen2333/ielts_test_backend/models"
 	"github.com/Queen2333/ielts_test_backend/utils"
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 )
 
@@ -175,4 +176,89 @@ func DeleteTestingRecord(c *gin.Context) {
 
 	// 返回成功响应
 	utils.HandleResponse(c, http.StatusOK, nil, "Success")
+}
+
+// @Summary 提交套题做题记录
+// @Description 提交套题做题记录
+// @Tags Testing
+// @Accept json
+// @Produce json
+// @Param part body models.TestingRecordsItem true "套题做题记录内容"
+// @Success 200 {object} models.ResponseData{data=nil}
+// @Failure 400 {object} models.ResponseData{data=nil}
+// @Failure 500 {object} models.ResponseData{data=nil}
+// @Router /record/testing/submit [post]
+func SubmitTestingRecord(c *gin.Context) {
+	// 获取提交的套题做题记录
+	var part models.TestingRecordsItem
+
+	if err := c.ShouldBindJSON(&part); err != nil {
+		utils.HandleResponse(c, http.StatusBadRequest, "", "Invalid request")
+		return
+	}
+
+	// 根据test_id获取套题列表
+	test, err := database.GetDataById("testing_list", part.TestID)
+    if err != nil {
+        utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
+        return
+    }
+
+	// 获取part_list
+	listeningPartListInterface, ok := test["listening_ids"].([]interface{})
+	if !ok {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to parse listening_ids")
+		return
+	}
+
+	// 调用 GetPartDetails 获取part详细信息
+	listeningDetails, err := utils.GetPartDetails(listeningPartListInterface, "listening_part_list")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to get listening part detail")
+		return
+	}
+	spew.Dump(listeningPartListInterface, "listeningPartListInterface")
+
+	// 获取part_list
+	readingPartListInterface, ok := test["reading_ids"].([]interface{})
+	if !ok {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to parse reading_ids")
+		return
+	}
+
+	readingDetails, err := utils.GetPartDetails(readingPartListInterface, "reading_part_list")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "failed to get reading part detail")
+		return
+	}
+	spew.Dump(readingPartListInterface, "readingPartListInterface")
+
+	listeningAnswers := part.Answers[:40] // 前40个答案
+	readingAnswers := part.Answers[40:80] // 后40个答案（从第41个到第80个）
+
+	listeningScore := utils.CalculateScore(listeningDetails, listeningAnswers)
+	readingScore := utils.CalculateScore(readingDetails, readingAnswers)
+
+	part.Status = "0"
+	part.Type = "3"
+	part.Score = []int{int(listeningScore), int(readingScore)}
+	userID, err := utils.GetUserIDFromToken(c)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+		return
+	}
+	// 将 user_id 添加到 part 中
+	part.UserID = userID
+
+	// 将数据插入数据库
+	result, err := database.InsertData("testing_records", &part, "update")
+	fmt.Println(err, "err")
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update testing records")
+		return
+	}
+
+	// // 返回插入后的数据
+	utils.HandleResponse(c, http.StatusOK, result, "Success")
+
 }

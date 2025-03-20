@@ -16,6 +16,7 @@ func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Static("/uploads", "./uploads")
+	// r.POST("/ask-grok", controllers.AskGrok)
 	
 	r.Use(func(c *gin.Context) {
 		if c.Request.URL.Path != "/login" && c.Request.URL.Path != "/send-code" {
@@ -110,6 +111,7 @@ func SetupRouter() *gin.Engine {
 	r.POST("/record/testing/add", controllers.AddTestingRecord)
 	r.PUT("/record/testing/update", controllers.UpdateTestingRecord)
 	r.DELETE("/record/testing/delete/:id", controllers.DeleteTestingRecord)
+	r.POST("/record/testing/submit", controllers.SubmitTestingRecord)
 
 	// 使用 Swagger UI 中间件
 	return r

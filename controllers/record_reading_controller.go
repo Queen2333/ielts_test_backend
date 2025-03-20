@@ -178,18 +178,18 @@ func DeleteReadingRecord(c *gin.Context) {
 	utils.HandleResponse(c, http.StatusOK, nil, "Success")
 }
 
-// @Summary 提交听力做题记录
-// @Description 提交听力做题记录
+// @Summary 提交阅读做题记录
+// @Description 提交阅读做题记录
 // @Tags Reading
 // @Accept json
 // @Produce json
-// @Param part body models.ReadingRecordsItem true "听力做题记录内容"
+// @Param part body models.ReadingRecordsItem true "阅读做题记录内容"
 // @Success 200 {object} models.ResponseData{data=nil}
 // @Failure 400 {object} models.ResponseData{data=nil}
 // @Failure 500 {object} models.ResponseData{data=nil}
 // @Router /record/reading/submit [post]
 func SubmitReadingRecord(c *gin.Context) {
-	// 获取提交的听力做题记录
+	// 获取提交的阅读做题记录
 	var part models.ReadingRecordsItem
 
 	spew.Dump(part, "part")
@@ -198,7 +198,7 @@ func SubmitReadingRecord(c *gin.Context) {
 		return
 	}
 
-	// 根据test_id获取听力列表
+	// 根据test_id获取阅读列表
 	test, err := database.GetDataById("reading_list", part.TestID)
     if err != nil {
         utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get data by id")
