@@ -5,9 +5,14 @@ FROM golang:1.21-alpine AS builder
 # 在容器中创建一个目录来存放项目代码
 WORKDIR /app
 
+ENV GOPROXY=https://goproxy.cn,direct
+
+RUN apk add --no-cache ca-certificates
+
 # 复制 go.mod 和 go.sum，下载依赖
 COPY go.mod go.sum ./
-RUN go mod download
+# RUN go mod download
+RUN go mod download -x || (sleep 5 && go mod download -x)
 
 # 将本地代码复制到容器中的工作目录
 COPY . .
@@ -27,7 +32,7 @@ FROM alpine:3.18
 
 # 在容器中创建一个目录来存放应用程序
 WORKDIR /root/
-
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # 从 builder 镜像中将编译好的应用程序复制到容器中
 COPY --from=builder /app/app .
 
