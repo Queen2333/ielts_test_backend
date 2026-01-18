@@ -24,6 +24,7 @@ type ListeningPartItem struct {
 	Name				string				`json:"name"`
 	TypeList			[]ListeningTypeItem	`json:"type_list"`
 	Type				string				`json:"type,omitempty"`
+	UserID				string				`json:"user_id,omitempty"`
 }
 
 type ListeningTypeItem struct {

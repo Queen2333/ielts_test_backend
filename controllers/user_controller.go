@@ -56,7 +56,7 @@ func RegisterUser(c *gin.Context) {
 func GetUserInfo(c * gin.Context){
 	authHeader := c.GetHeader("Authorization")
 	if authHeader == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Authorization header missing"})
+		utils.HandleResponse(c, http.StatusBadRequest, nil, "Authorization header missing")
 		return
 	}
 
@@ -65,7 +65,7 @@ func GetUserInfo(c * gin.Context){
 	utils.InitRedis()
 	user_info, err := utils.Get(token)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user in Redis"})
+		utils.HandleResponse(c, http.StatusInternalServerError, nil, "Failed to get user in Redis")
 		return
 	}
 
@@ -73,9 +73,10 @@ func GetUserInfo(c * gin.Context){
 	err = json.Unmarshal([]byte(user_info), &userInfo)
 	if err != nil {
 		fmt.Println("Error:", err)
+		utils.HandleResponse(c, http.StatusInternalServerError, nil, "Failed to parse user info")
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"user": userInfo})
+	utils.HandleResponse(c, http.StatusOK, userInfo, "Success")
 }
 
 // GetAllUser 获取所有用户

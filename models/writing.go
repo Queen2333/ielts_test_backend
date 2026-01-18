@@ -25,6 +25,7 @@ type WritingPartItem struct {
 	Title				string				`json:"title"`
 	SubTitle			string				`json:"sub_title,omitempty"`
 	Img					string				`json:"img,omitempty"`
+	UserID				string				`json:"user_id,omitempty"`
 }
 type WritingRecordsItem struct {
 	ID 					int					`json:"id,omitempty"`

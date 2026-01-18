@@ -23,6 +23,7 @@ type ReadingPartItem struct {
 	TypeList			[]ReadingTypeItem	`json:"type_list"`
 	Type				string				`json:"type,omitempty"`
 	Article				string				`json:"article"`
+	UserID				string				`json:"user_id,omitempty"`
 }
 
 type ReadingTypeItem struct {

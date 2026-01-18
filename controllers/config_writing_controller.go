@@ -324,6 +324,14 @@ func AddWritingPart(c *gin.Context) {
 		return
 	}
 
+	// 获取当前用户ID并设置到part中
+	userID, err := utils.GetUserIDFromToken(c)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
+		return
+	}
+	part.UserID = userID
+
 	// 将数据插入数据库
 	result, err := database.InsertData("writing_part_list", &part, "create")
 	if err != nil {

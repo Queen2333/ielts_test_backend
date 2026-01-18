@@ -17,15 +17,18 @@ func SetupRouter() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Static("/uploads", "./uploads")
 	// r.POST("/ask-grok", controllers.AskGrok)
-	
+
+	// 先启用 CORS 中间件，确保预检请求能正确处理
+	r.Use(enableCORS)
+	// 使用 Logger 中间件
+	r.Use(middlewares.Logger())
+
+	// JWT 认证中间件在 CORS 之后
 	r.Use(func(c *gin.Context) {
 		if c.Request.URL.Path != "/login" && c.Request.URL.Path != "/send-code" {
 			middlewares.JWTAuthMiddleware()(c)
 		}
 	})
-	r.Use(enableCORS)
-	// 使用 Logger 中间件
-	r.Use(middlewares.Logger())
 
 	r.POST("/login", controllers.LoginHandler)
 	r.POST("/send-code", controllers.SendCodeHandler)
