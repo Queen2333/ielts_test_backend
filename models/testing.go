@@ -13,8 +13,8 @@ type TestingItem struct {
 type BasicTestingItem struct {
 	ID 					int					`json:"id,omitempty"`
 	Name				string				`json:"name"`
-	Status    			int    				`json:"status"`
-	Type      			int    				`json:"type"`
+	Status    			FlexInt    			`json:"status"`
+	Type      			FlexInt    			`json:"type"`
 	ListeningIDs		[]int				`json:"listening_ids"`
 	ReadingIDs			[]int				`json:"reading_ids"`
 	WritingIDs			[]int				`json:"writing_ids"`

@@ -9,15 +9,20 @@ import (
 )
 
 var rdb *redis.Client
+var redisInitialized = false
 
-// InitRedis 初始化Redis客户端
+// InitRedis 初始化Redis客户端（只初始化一次）
 func InitRedis() error {
+	// 如果已经初始化过，直接返回
+	if redisInitialized && rdb != nil {
+		return nil
+	}
+
 	rdb = redis.NewClient(&redis.Options{
 		Addr:     "172.25.138.133:6379", // Redis服务器地址
-		Password: "Yx180236",                   // Redis密码，如果没有设置密码则为空
-		DB:       0,                    // Redis数据库索引（默认为0）
+		Password: "Yx180236",             // Redis密码，如果没有设置密码则为空
+		DB:       0,                      // Redis数据库索引（默认为0）
 	})
-	// 可以在这里添加其他的初始化配置，例如设置连接池大小等
 
 	// 测试连接是否成功
 	pong, err := rdb.Ping(context.Background()).Result()
@@ -25,7 +30,8 @@ func InitRedis() error {
 		fmt.Println("Failed to connect to Redis:", err)
 		return err
 	}
-	fmt.Println(pong) // 打印结果: PONG
+	fmt.Println("Redis connected:", pong) // 打印结果: PONG
+	redisInitialized = true
 	return nil
 }
 

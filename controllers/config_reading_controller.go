@@ -137,7 +137,7 @@ func AddReading(c *gin.Context) {
 		return
 	}
 
-	if part.Type == 3 {
+	if part.Type.Int() == 3 {
 		userID, err := utils.GetUserIDFromToken(c)
 		if err != nil {
 			// 处理获取 user_id 失败的情况
@@ -178,25 +178,30 @@ func UpdateReading(c *gin.Context) {
 		return
 	}
 
-	if part.Type == 3 {
-		userID, err := utils.GetUserIDFromToken(c)
-		if err != nil {
-			// 处理获取 user_id 失败的情况
-			utils.HandleResponse(c, http.StatusUnauthorized, "", err.Error())
-			return
-		}
+	// 如果 type=3（用户自定义），需要保留 user_id
+	if part.Type.Int() == 3 {
+		// 如果请求中没有提供 user_id，从数据库获取原有的 user_id
+		if part.UserID == "" {
+			existingData, err := database.GetDataById("reading_list", part.ID)
+			if err != nil {
+				utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get existing data")
+				return
+			}
 
-		// 将 user_id 添加到 part 中
-		part.UserID = userID
+			if existingUserID, ok := existingData["user_id"].(string); ok {
+				part.UserID = existingUserID
+			}
+		}
 	}
-	// 将数据插入数据库
+
+	// 将数据更新到数据库
 	result, err := database.InsertData("reading_list", &part, "update")
 	if err != nil {
 		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to update reading part")
 		return
 	}
 
-	// 返回插入后的数据
+	// 返回更新后的数据
 	utils.HandleResponse(c, http.StatusOK, result, "Success")
 }
 
@@ -359,7 +364,21 @@ func UpdateReadingPart(c *gin.Context) {
 		return
 	}
 
-	// 将数据插入数据库
+	// 获取原有数据以保留 user_id
+	existingData, err := database.GetDataById("reading_part_list", part.ID)
+	if err != nil {
+		utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to get existing data")
+		return
+	}
+
+	// 如果请求中没有 user_id，则保留原有的 user_id
+	if part.UserID == "" {
+		if existingUserID, ok := existingData["user_id"].(string); ok {
+			part.UserID = existingUserID
+		}
+	}
+
+	// 将数据更新到数据库
 	result, err := database.InsertData("reading_part_list", &part, "update")
 	fmt.Println(err, "err")
 	if err != nil {
@@ -367,7 +386,7 @@ func UpdateReadingPart(c *gin.Context) {
 		return
 	}
 
-	// 返回插入后的数据
+	// 返回更新后的数据
 	utils.HandleResponse(c, http.StatusOK, result, "Success")
 }
 

@@ -117,7 +117,11 @@ func GetUserIDFromToken(c *gin.Context) (string, error) {
 	}
 
 	// 初始化 Redis 并获取 user 信息
-	InitRedis()
+	err := InitRedis()
+	if err != nil {
+		return "", fmt.Errorf("failed to initialize Redis: %w", err)
+	}
+
 	val, err := Get(token)
 	if err != nil {
 		return "", errors.New("failed to retrieve user from Redis")

@@ -12,8 +12,8 @@ type ListeningItem struct {
 type BasicListeningItem struct {
 	ID 					int					`json:"id,omitempty"`
 	Name				string				`json:"name"`
-	Status    			int    				`json:"status"`
-	Type      			int    				`json:"type"`
+	Status    			FlexInt    			`json:"status"`
+	Type      			FlexInt    			`json:"type"`
 	AudioFiles 			[]string			`json:"audio_files"`
 	PartList			[]int				`json:"part_list"`
 	UserID				string				`json:"user_id,omitempty"`

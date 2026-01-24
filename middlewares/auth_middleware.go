@@ -26,10 +26,18 @@ func JWTAuthMiddleware() gin.HandlerFunc {
 		// Extract the token from the Authorization header.
 		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
 
-		utils.InitRedis()
-		_, err := utils.Get(tokenString)
+		// 初始化 Redis
+		err := utils.InitRedis()
 		if err != nil {
-			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to retrieve stored token from Redis")
+			utils.HandleResponse(c, http.StatusInternalServerError, "", "Failed to connect to Redis")
+			c.Abort()
+			return
+		}
+
+		// 从 Redis 获取 token
+		_, err = utils.Get(tokenString)
+		if err != nil {
+			utils.HandleResponse(c, http.StatusUnauthorized, "", "Invalid or expired token")
 			c.Abort()
 			return
 		}

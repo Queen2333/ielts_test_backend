@@ -137,23 +137,28 @@ func createUser(email string) (models.UserQuery, error) {
 
 // GenerateJWT 生成 JWT
 func GenerateJWT(c *gin.Context, user_id string) (string, error) {
+	// 尝试从 Redis 获取已存在的 token
 	tokenString, err := utils.Get("token_" + user_id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get token in Redis"})
+		// Redis 中没有 token，创建新的 token（这是正常情况，不是错误）
 		token := jwt.New(jwt.SigningMethodHS256)
 		claims := token.Claims.(jwt.MapClaims)
 		claims["email"] = user_id
 		claims["exp"] = time.Now().Add(time.Hour * 24).Unix() // 设置过期时间为 24 小时
+
 		// 签名 JWT
 		tokenString, err = token.SignedString(jwtSecret)
 		if err != nil {
 			return "", err
 		}
+
+		// 将 token 存储到 Redis
 		err = utils.Set("token_" + user_id, tokenString, 24 * time.Hour)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to store token in Redis"})
+			// 存储失败时记录日志，但不影响登录流程
+			fmt.Printf("Warning: Failed to store token in Redis: %v\n", err)
 		}
 	}
-	
+
 	return tokenString, nil
 }

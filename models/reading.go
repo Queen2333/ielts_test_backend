@@ -11,8 +11,8 @@ type ReadingItem struct {
 type BasicReadingItem struct {
 	ID 					int					`json:"id,omitempty"`
 	Name				string				`json:"name"`
-	Status    			int    				`json:"status"`
-	Type      			int    				`json:"type"`
+	Status    			FlexInt    			`json:"status"`
+	Type      			FlexInt    			`json:"type"`
 	PartList			[]int				`json:"part_list"`
 	UserID				string				`json:"user_id,omitempty"`
 }
