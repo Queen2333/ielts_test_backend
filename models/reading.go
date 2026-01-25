@@ -33,7 +33,8 @@ type ReadingTypeItem struct {
 	QuestionList		[]ReadingQuestionItem		`json:"question_list"`
 	Options				[]ReadingOptionsItem		`json:"options,omitempty"`
 	ArticleContent		string						`json:"article_content,omitempty"`
-	Picture 			string						`json:"picture,omitempty"`
+	Picture 			[]PicturesItem				`json:"picture,omitempty"`
+	MatchingOptions     []MatchingOptionsItem		`json:"matching_options,omitempty"`
 }
 
 type ReadingQuestionItem struct {
