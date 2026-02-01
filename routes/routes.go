@@ -15,7 +15,9 @@ import (
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	// 静态文件服务
 	r.Static("/uploads", "./uploads")
+	r.Static("/files", "./uploads")
 	// r.POST("/ask-grok", controllers.AskGrok)
 
 	// 先启用 CORS 中间件，确保预检请求能正确处理
@@ -49,7 +51,10 @@ func SetupRouter() *gin.Engine {
 	r.PUT("/config/listening-part/update", controllers.UpdateListeningPart)
 	r.DELETE("/config/listening-part/delete/:id", controllers.DeleteListeningPart)
 
-	r.POST("/upload/file", controllers.UploadFile)
+	// 文件上传和删除
+	r.POST("/upload", controllers.UploadFile)                   // Python转发方式（保留旧逻辑）
+	r.POST("/upload/file", controllers.UploadFileNative)      // Go原生处理（新方式，推荐）
+	r.DELETE("/upload/delete", controllers.DeleteFile)
 
 	// 阅读
 	r.GET("/config/reading/list", controllers.ReadingList)

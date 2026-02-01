@@ -24,6 +24,7 @@ type ListeningPartItem struct {
 	Name				string				`json:"name"`
 	TypeList			[]ListeningTypeItem	`json:"type_list"`
 	Type				string				`json:"type,omitempty"`
+	AudioFiles			[]string			`json:"audio_files,omitempty"`
 	UserID				string				`json:"user_id,omitempty"`
 }
 
@@ -31,7 +32,7 @@ type ListeningTypeItem struct {
 	Title    			string    				`json:"title"`
 	Type     			string       			`json:"type"`
 	ArticleContent    	string					`json:"article_content,omitempty"`
-	Picture				[]PicturesItem			`json:"picture,omitempty"`
+	Picture				[]string				`json:"picture,omitempty"`  // 图片URL数组
 	MatchingOptions     []MatchingOptionsItem	`json:"matching_options,omitempty"`
 	QuestionList		[]ListeningQuestionItem	`json:"question_list"`
 }
